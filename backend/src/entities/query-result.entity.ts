@@ -1,28 +1,31 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-@Entity('query_results')
+export type QueryResultDocument = QueryResult & Document;
+
+@Schema({
+  collection: 'query_results',
+  timestamps: true,
+})
 export class QueryResult {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ type: 'text' })
+  @Prop({ required: true })
   originalQuery: string;
 
-  @Column({ type: 'text' })
+  @Prop({ required: true })
   queryType: string; // 'link' | 'person' | 'other'
 
-  @Column({ type: 'text' })
+  @Prop({ required: true })
   structuredData: string; // JSON string of the structured result
 
-  @Column({ type: 'text', nullable: true })
-  perplexityResponse: string; // Raw response from Perplexity
+  @Prop()
+  perplexityResponse?: string; // Raw response from Perplexity
 
-  @Column({ type: 'text', nullable: true })
-  kimiResponse: string; // Raw response from Kimi K2
+  @Prop()
+  kimiResponse?: string; // Raw response from Kimi K2
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+  // 添加时间戳字段定义
+  createdAt?: Date;
+  updatedAt?: Date;
 }
+
+export const QueryResultSchema = SchemaFactory.createForClass(QueryResult);
