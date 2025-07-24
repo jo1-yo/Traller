@@ -1,0 +1,11 @@
+{
+	"dependencies": {
+		"@nestjs/typeorm": "^11.0.0",
+		"typeorm": "^0.3.25",
+		"sqlite3": "^5.1.7",
+		"@nestjs/config": "^4.0.2",
+		"axios": "^1.11.0",
+		"class-validator": "^0.14.2",
+		"class-transformer": "^0.5.1"
+	}
+}
