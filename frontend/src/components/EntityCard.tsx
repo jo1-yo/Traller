@@ -1,124 +1,156 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Building2, User, ExternalLink } from 'lucide-react';
+import React, { useRef } from 'react';
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { Building2, User, ExternalLink, Calendar } from 'lucide-react';
 import type { Entity } from '@/types';
 import { cn, getEntityTypeColor, getRelationshipScoreColor } from '@/lib/utils';
 
 interface EntityCardProps {
   entity: Entity;
-  onClick: () => void;
+  onEntityClick: (entity: Entity) => void;
   isProtagonist?: boolean;
   className?: string;
 }
 
+const tagIcon = {
+  people: <User className="w-4 h-4 text-white/80" />,
+  company: <Building2 className="w-4 h-4 text-white/80" />,
+  event: <Calendar className="w-4 h-4 text-white/80" />,
+};
+
 export const EntityCard: React.FC<EntityCardProps> = ({
   entity,
-  onClick,
+  onEntityClick,
   isProtagonist = false,
   className,
 }) => {
   const typeColor = getEntityTypeColor(entity.tag);
   const scoreColor = getRelationshipScoreColor(entity.relationship_score);
+  
+  const ref = useRef<HTMLDivElement>(null);
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return;
+    const { left, top, width, height } = ref.current.getBoundingClientRect();
+    mouseX.set(e.clientX - left - width / 2);
+    mouseY.set(e.clientY - top - height / 2);
+  };
+  
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
+  const rotateX = useSpring(useTransform(mouseY, [-100, 100], [-8, 8]), { stiffness: 350, damping: 40 });
+  const rotateY = useSpring(useTransform(mouseX, [-100, 100], [8, -8]), { stiffness: 350, damping: 40 });
+  const glowX = useSpring(useTransform(mouseX, [-150, 150], [0, 100]), { stiffness: 300, damping: 30 });
+  const glowY = useSpring(useTransform(mouseY, [-150, 150], [0, 100]), { stiffness: 300, damping: 30 });
+
+  const getTagDisplayName = () => {
+    if (entity.tag === 'people') return '人物';
+    if (entity.tag === 'company') return '公司';
+    if (entity.tag === 'event') return '事件';
+    return '实体';
+  }
 
   return (
     <motion.div
-      className={cn(
-        'relative cursor-pointer group',
-        'transition-all duration-300 ease-out',
-        'hover:scale-105 hover:z-10',
-        className
-      )}
-      whileHover={{ y: -2 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={onClick}
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onClick={() => onEntityClick(entity)}
+      style={{ perspective: '1000px' }}
+      className={cn('relative w-64 h-36 transform-style-3d group', className)}
+      whileTap={{ scale: 0.97 }}
       layout
     >
-      <div
+      <motion.div
+        style={{ rotateX, rotateY }}
         className={cn(
-          'card p-4 w-64 h-32',
-          'border-2 transition-all duration-300',
-          'hover:shadow-lg hover:shadow-blue-100',
-          isProtagonist
-            ? 'border-primary-500 bg-primary-50 shadow-lg'
-            : 'border-gray-200 hover:border-primary-300',
-          typeColor.includes('blue') && !isProtagonist && 'hover:border-blue-400',
-          typeColor.includes('green') && !isProtagonist && 'hover:border-green-400'
+          'absolute inset-0 rounded-xl border',
+          'bg-card/60 backdrop-blur-md',
+          'shadow-md hover:shadow-xl transition-shadow duration-300',
+          isProtagonist 
+            ? 'border-primary/80 shadow-primary/20 hover:shadow-primary/30'
+            : 'border-border/80 hover:border-border'
         )}
       >
-        {/* 关系评分标识 */}
-        {!isProtagonist && (
-          <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center text-xs font-bold">
-            <span className={scoreColor}>{entity.relationship_score}</span>
-          </div>
-        )}
-
-        {/* 主角标识 */}
+        <motion.div 
+          className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 overflow-hidden"
+          style={{
+            background: `radial-gradient(circle at ${glowX}% ${glowY}%, hsl(var(--primary) / 0.1), transparent 40%)`,
+            mixBlendMode: 'soft-light'
+          }}
+        />
         {isProtagonist && (
-          <div className="absolute -top-2 -left-2 px-2 py-1 bg-primary-500 text-white text-xs font-medium rounded-full">
-            主角
-          </div>
+          <motion.div className="absolute -inset-1 rounded-xl border-2 border-primary opacity-50 blur-sm animate-pulse" />
         )}
+      </motion.div>
 
-        <div className="flex items-start space-x-3 h-full">
-          {/* 头像或图标 */}
-          <div className="flex-shrink-0">
-            {entity.avatar_url && entity.avatar_url.trim() !== '' ? (
-              <img
-                src={entity.avatar_url}
-                alt={entity.name}
-                className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                }}
-              />
-            ) : null}
+      <motion.div 
+        style={{ rotateX, rotateY }}
+        className="absolute inset-0 p-4 flex flex-col justify-between"
+      >
+        <div className="flex items-start justify-between">
+          <div className="flex items-center space-x-3">
             <div
               className={cn(
-                'w-12 h-12 rounded-full flex items-center justify-center',
-                typeColor,
-                entity.avatar_url && entity.avatar_url.trim() !== '' ? 'hidden' : ''
+                'w-10 h-10 rounded-full flex items-center justify-center shrink-0',
+                entity.avatar_url ? 'bg-card' : typeColor
               )}
             >
-              {entity.tag === 'people' ? (
-                <User className="w-6 h-6" />
+              {entity.avatar_url ? (
+                <img 
+                  src={entity.avatar_url} 
+                  alt={entity.name} 
+                  className="w-full h-full rounded-full object-cover"
+                />
               ) : (
-                <Building2 className="w-6 h-6" />
+                tagIcon[entity.tag]
               )}
             </div>
-          </div>
-
-          {/* 信息区域 */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center space-x-2 mb-1">
-              <h3 className="font-semibold text-gray-900 truncate text-sm">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-card-foreground truncate text-base">
                 {entity.name}
               </h3>
-              <ExternalLink className="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="flex items-center text-xs text-muted-foreground mt-2">
+                <div className="flex items-center gap-1 mr-3">
+                  {tagIcon[entity.tag]}
+                  <span>{getTagDisplayName()}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className={cn('w-2 h-2 rounded-full', scoreColor)} />
+                  <span className="text-xs font-semibold">{entity.relationship_score}</span>
+                </div>
+              </div>
             </div>
-            
-            <div className="flex items-center space-x-2 mb-2">
-              <span
-                className={cn(
-                  'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border',
-                  typeColor
-                )}
-              >
-                {entity.tag === 'people' ? '人物' : '公司'}
-              </span>
-            </div>
-
-            <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
-              {entity.summary}
-            </p>
           </div>
+          
+          {isProtagonist && (
+            <div className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-full">
+              主角
+            </div>
+          )}
         </div>
+        
+        <p className="text-xs text-muted-foreground line-clamp-2 mt-2">
+          {entity.summary}
+        </p>
 
-        {/* 悬停提示 */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black bg-opacity-5 rounded-lg">
-          <span className="text-xs text-gray-700 font-medium">点击查看详情</span>
-        </div>
-      </div>
+        {entity.links && entity.links.length > 0 && (
+          <a
+            href={entity.links[0].url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          >
+            <ExternalLink className="w-4 h-4 text-muted-foreground/80" />
+          </a>
+        )}
+      </motion.div>
     </motion.div>
   );
 }; 

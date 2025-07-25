@@ -3,10 +3,12 @@ export interface EntityLink {
   url: string;
 }
 
+export type EntityTag = 'people' | 'company' | 'event';
+
 export interface Entity {
   id: number;
   name: string;
-  tag: 'people' | 'company';
+  tag: EntityTag;
   avatar_url: string;
   relationship_score: number;
   summary: string;

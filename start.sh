@@ -61,7 +61,7 @@ echo "后端服务已启动，PID: $BACKEND_PID"
 echo "后端日志: logs/backend.log"
 
 # 等待后端启动
-echo "⏳ 等待后端服务启动..."
+echo "⏳ 等待后端服务启动..."d
 sleep 3
 
 # 启动前端服务

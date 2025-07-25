@@ -1,41 +1,89 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+ 
 @layer base {
   :root {
-    --radius: 0.5rem;
+    --background: 240 100% 4%; /* 更深的背景色 */
+    --foreground: 210 40% 98%;
+
+    --card: 240 100% 7%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 240 100% 4%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 260 100% 60%; /* 调整为与品牌色一致的紫色 */
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 220 100% 60%; /* 调整为与品牌色一致的蓝色 */
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 240 100% 7%;
+    --muted-foreground: 240 5% 65%;
+ 
+    --accent: 180 100% 50%; /* 调整为与品牌色一致的青色 */
+    --accent-foreground: 240 100% 4%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 240 100% 12%;
+    --input: 240 100% 12%;
+    --ring: 220 100% 60%; /* 使用蓝色作为ring颜色 */
+ 
+    --radius: 0.75rem;
   }
 }
-
+ 
 @layer base {
   * {
-    @apply border-gray-200;
+    @apply border-border;
   }
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    opacity: 1;
+    background-image: 
+      radial-gradient(ellipse 80% 50% at 50% -20%, hsl(240 100% 7%), transparent),
+      radial-gradient(ellipse 80% 50% at 50% 120%, hsl(180 100% 30% / 0.5), transparent),
+      radial-gradient(circle at 25px 25px, hsl(210 40% 98% / 0.05) 1px, transparent 0);
+    background-size: 50px 50px;
   }
 }
 
 @layer components {
-  .card {
-    @apply bg-white text-gray-900 rounded-lg border border-gray-200 shadow-sm;
+  .input-glow-border {
+    @apply relative rounded-full;
   }
   
-  .btn {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  .input-glow-border::before {
+    content: '';
+    @apply absolute -inset-px rounded-full bg-gradient-to-r from-brand-light-blue to-brand-cyan opacity-0 transition-opacity duration-300;
   }
-  
-  .btn-primary {
-    @apply btn bg-primary-500 text-white hover:bg-primary-600 focus:bg-primary-600;
-  }
-  
-  .btn-secondary {
-    @apply btn bg-gray-100 text-gray-900 hover:bg-gray-200 focus:bg-gray-200;
+
+  .input-glow-border:focus-within::before {
+    @apply opacity-100;
   }
   
   .input {
-    @apply flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply relative w-full h-12 px-6 rounded-full bg-gradient-to-r from-brand-dark-blue to-brand-purple text-white placeholder:text-gray-400 border border-transparent transition-all;
+  }
+
+  .input:focus {
+    @apply outline-none ring-2 ring-brand-light-blue bg-gradient-to-r from-brand-dark-blue to-brand-purple;
+  }
+  
+  .btn {
+    @apply inline-flex items-center justify-center rounded-full text-sm font-semibold transition-colors disabled:pointer-events-none disabled:opacity-50;
+  }
+  
+  .btn-primary {
+    @apply btn h-10 px-6 bg-gradient-to-r from-brand-light-blue to-brand-cyan text-brand-dark-blue shadow-lg shadow-cyan-500/20 hover:opacity-90;
+  }
+  
+  .btn-secondary {
+    @apply btn h-8 px-4 bg-gray-500/20 text-gray-300 hover:bg-gray-500/30;
   }
 }
 

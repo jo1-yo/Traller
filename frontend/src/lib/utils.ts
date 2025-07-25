@@ -1,16 +1,19 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { EntityTag } from '@/types';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function getEntityTypeColor(tag: 'people' | 'company'): string {
+export function getEntityTypeColor(tag: EntityTag): string {
   switch (tag) {
     case 'people':
       return 'bg-blue-100 border-blue-300 text-blue-800';
     case 'company':
       return 'bg-green-100 border-green-300 text-green-800';
+    case 'event':
+      return 'bg-purple-100 border-purple-300 text-purple-800';
     default:
       return 'bg-gray-100 border-gray-300 text-gray-800';
   }

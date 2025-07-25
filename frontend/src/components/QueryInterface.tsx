@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Search, Loader2, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2, Wand2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface QueryInterfaceProps {
   onSubmit: (query: string) => void;
   isLoading: boolean;
+  error?: string | null;
   className?: string;
 }
 
 export const QueryInterface: React.FC<QueryInterfaceProps> = ({
   onSubmit,
   isLoading,
+  error,
   className,
 }) => {
   const [query, setQuery] = useState('');
@@ -23,111 +25,112 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
     }
   };
 
+  const examples = [
+    '马云',
+    'Elon Musk',
+    '字节跳动',
+    'https://www.tesla.com/about',
+    '李开复 AI',
+  ];
+
+  const containerVariants = {
+    initial: { opacity: 0 },
+    animate: { 
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    },
+  };
+
+  const itemVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100 } },
+  };
+
   return (
-    <div className={cn('w-full max-w-4xl mx-auto', className)}>
-      <div className="text-center mb-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex items-center justify-center mb-4"
-        >
-          <Sparkles className="w-8 h-8 text-primary-500 mr-2" />
-          <h1 className="text-4xl font-bold text-gray-900">萃流</h1>
+    <div className={cn('w-full max-w-2xl mx-auto px-4 py-8', className)}>
+      <motion.div 
+        variants={containerVariants}
+        initial="initial"
+        animate="animate"
+        className="text-center"
+      >
+        <motion.div variants={itemVariants} className="flex items-center justify-center mb-4">
+          <img src="/logo Traller(1).png" alt="Traller Logo" className="w-24 h-24" />
         </motion.div>
+
+        <motion.h1 variants={itemVariants} className="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-white to-brand-light-cyan tracking-tight mb-3">
+          萃流
+        </motion.h1>
         
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-lg text-gray-600 mb-2"
-        >
-          人物智能探索系统
-        </motion.p>
-        
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-sm text-gray-500"
-        >
+        <motion.p variants={itemVariants} className="text-lg text-gray-300 mb-12">
           AI驱动的深度人物情报与关系网络探索平台
         </motion.p>
-      </div>
+      </motion.div>
 
-      <motion.form
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.3 }}
-        onSubmit={handleSubmit}
-        className="relative"
-      >
-        <div className="relative flex items-center">
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="输入人物姓名、公司、链接或任何相关信息..."
-            className={cn(
-              'input w-full pr-32 py-4 text-base',
-              'border-2 border-gray-200 focus:border-primary-400',
-              'shadow-lg hover:shadow-xl transition-all duration-300',
-              isLoading && 'opacity-70'
-            )}
-            disabled={isLoading}
-          />
-          
-          <button
-            type="submit"
-            disabled={isLoading || !query.trim()}
-            className={cn(
-              'absolute right-2 btn-primary px-6 py-2',
-              'transition-all duration-300 transform',
-              'hover:scale-105 active:scale-95',
-              'disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'
-            )}
-          >
-            {isLoading ? (
-              <div className="flex items-center space-x-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>分析中...</span>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <Search className="w-4 h-4" />
-                <span>探索</span>
-              </div>
-            )}
-          </button>
-        </div>
-      </motion.form>
-
-      {/* 示例查询 */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
+        variants={itemVariants}
+        initial="initial"
+        animate="animate"
+        transition={{ delay: 0.2 }}
+      >
+        <form onSubmit={handleSubmit} className="input-glow-border">
+          <div className="relative flex items-center">
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="输入 Elon Musk 试试..."
+              className="input"
+              disabled={isLoading}
+            />
+            
+            <button
+              type="submit"
+              disabled={isLoading || !query.trim()}
+              className="btn-primary absolute right-2"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={isLoading ? 'loading' : 'ready'}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center justify-center space-x-2"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>分析中</span>
+                    </>
+                  ) : (
+                    <>
+                      <Wand2 className="w-5 h-5" />
+                      <span>探索</span>
+                    </>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </button>
+          </div>
+        </form>
+      </motion.div>
+
+      <motion.div
+        variants={itemVariants}
+        initial="initial"
+        animate="animate"
+        transition={{ delay: 0.3 }}
         className="mt-6"
       >
-        <p className="text-sm text-gray-500 mb-3 text-center">试试这些示例：</p>
-        <div className="flex flex-wrap justify-center gap-2">
-          {[
-            '马云',
-            'Elon Musk',
-            '字节跳动',
-            'https://www.tesla.com/about',
-            '李开复 AI',
-          ].map((example) => (
+        <div className="flex flex-wrap justify-center items-center gap-3">
+          <span className="text-sm text-gray-400">示例:</span>
+          {examples.map((example) => (
             <button
               key={example}
               onClick={() => !isLoading && setQuery(example)}
               disabled={isLoading}
-              className={cn(
-                'px-3 py-1 text-sm rounded-full border border-gray-300',
-                'hover:border-primary-400 hover:bg-primary-50 hover:text-primary-700',
-                'transition-all duration-200',
-                'disabled:opacity-50 disabled:cursor-not-allowed'
-              )}
+              className="btn-secondary"
             >
               {example}
             </button>
@@ -135,22 +138,42 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
         </div>
       </motion.div>
 
-      {/* 加载状态指示器 */}
-      {isLoading && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-8 text-center"
-        >
-          <div className="inline-flex items-center space-x-2 text-gray-600">
-            <Loader2 className="w-5 h-5 animate-spin" />
-            <span>AI正在深度分析，请耐心等待...</span>
-          </div>
-          <div className="mt-2 text-sm text-gray-500">
-            这个过程可能需要1-2分钟，我们正在搜集和分析相关信息
-          </div>
-        </motion.div>
-      )}
+      <div className="mt-8 h-12">
+        <AnimatePresence>
+          {isLoading && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="flex items-center justify-center space-x-2 text-gray-400"
+            >
+              <div className="flex space-x-1">
+                {[...Array(3)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="w-1.5 h-1.5 bg-brand-cyan rounded-full"
+                    animate={{ 
+                      y: [0, -4, 0],
+                      transition: { duration: 1, repeat: Infinity, delay: i * 0.15 }
+                    }}
+                  />
+                ))}
+              </div>
+              <span className="text-sm">AI正在深度分析中，请耐心等待... (约需1-2分钟)</span>
+            </motion.div>
+          )}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mt-4 text-center text-red-300 bg-red-500/20 p-3 rounded-lg"
+            >
+              {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }; 
