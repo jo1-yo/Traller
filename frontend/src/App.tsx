@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { QueryInterface } from "./components/QueryInterface";
 import { RelationshipCanvas } from "./components/RelationshipCanvas";
 import { EntityDetailModal } from "./components/EntityDetailModal";

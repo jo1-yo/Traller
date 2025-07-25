@@ -15,9 +15,10 @@ import "reactflow/dist/style.css";
 import { motion } from "framer-motion";
 import dagre from "dagre";
 
-import { Filter, Users, Building, HelpCircle, Sigma } from "lucide-react";
+import { Filter, Users, Building, HelpCircle, Sigma, Grid3X3, Circle } from "lucide-react";
 import type { Entity } from "@/types";
 import { EntityCard } from "./EntityCard";
+import { RingCanvas } from "./RingCanvas";
 import { cn, getRelationshipScoreColor } from "@/lib/utils";
 
 interface RelationshipCanvasProps {
@@ -140,6 +141,7 @@ export const RelationshipCanvas: React.FC<RelationshipCanvasProps> = ({
   className,
 }) => {
   const [filter, setFilter] = useState<"all" | "person" | "company">("all");
+  const [layoutMode, setLayoutMode] = useState<"flow" | "ring">("flow");
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
@@ -230,49 +232,59 @@ export const RelationshipCanvas: React.FC<RelationshipCanvasProps> = ({
       transition={{ duration: 0.5 }}
       className={cn("w-full h-full relative", className)}
     >
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        nodeTypes={nodeTypes}
-        connectionMode={ConnectionMode.Loose}
-        fitView
-        fitViewOptions={{ padding: 0.1, duration: 800 }}
-        minZoom={0.2}
-        className="bg-dots"
-      >
-        <Background />
-        <Controls className="!bottom-5 md:!bottom-10 !left-auto !right-3 md:!right-5 !top-auto !m-0 !transform-none" />
-        <MiniMap
-          nodeColor={(n: Node) =>
-            n.data.isProtagonist
-              ? "hsl(var(--primary))"
-              : getRelationshipScoreColor(n.data.entity.relationship_score)
-          }
-          nodeStrokeWidth={3}
-          pannable
-          className="!bottom-5 md:!bottom-10 !left-3 md:!left-5 !h-32 md:!h-40 !w-48 md:!w-60 !border-2 !border-white/20 !bg-black/40 !shadow-xl backdrop-blur-md"
+      {layoutMode === "flow" ? (
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          nodeTypes={nodeTypes}
+          connectionMode={ConnectionMode.Loose}
+          fitView
+          fitViewOptions={{ padding: 0.1, duration: 800 }}
+          minZoom={0.2}
+          className="bg-dots"
+        >
+          <Background />
+          <Controls className="!bottom-5 md:!bottom-10 !left-auto !right-3 md:!right-5 !top-auto !m-0 !transform-none" />
+          <MiniMap
+            nodeColor={(n: Node) =>
+              n.data.isProtagonist
+                ? "hsl(var(--primary))"
+                : getRelationshipScoreColor(n.data.entity.relationship_score)
+            }
+            nodeStrokeWidth={3}
+            pannable
+            className="!bottom-5 md:!bottom-10 !left-3 md:!left-5 !h-32 md:!h-40 !w-48 md:!w-60 !border-2 !border-white/20 !bg-black/40 !shadow-xl backdrop-blur-md"
+          />
+        </ReactFlow>
+      ) : (
+        <RingCanvas
+          entities={filteredEntities}
+          onEntityClick={onEntityClick}
+          className="w-full h-full"
         />
+      )}
 
-        <div className="absolute top-3 md:top-5 left-3 md:left-5 right-3 md:right-5 flex flex-col md:flex-row justify-between items-start gap-3 md:gap-0 pointer-events-none">
-          {/* Left Controls - Filters */}
-          <div className="flex flex-col gap-2 md:gap-3 pointer-events-auto">
-            <FilterControl filter={filter} setFilter={setFilter} />
-          </div>
+      {/* 统一的控制面板 */}
+      <div className="absolute top-3 md:top-5 left-3 md:left-5 right-3 md:right-5 flex flex-col md:flex-row justify-between items-start gap-3 md:gap-0 pointer-events-none">
+        {/* Left Controls - Filters & Layout */}
+        <div className="flex flex-col gap-2 md:gap-3 pointer-events-auto">
+          <FilterControl filter={filter} setFilter={setFilter} />
+          <LayoutControl layoutMode={layoutMode} setLayoutMode={setLayoutMode} />
+        </div>
 
-          {/* Right Controls - Stats & Help */}
-          <div className="flex flex-col gap-2 md:gap-3 pointer-events-auto">
-            <StatsPanel
-              total={entities.length}
-              shown={filteredEntities.length}
-            />
-            <div className="hidden md:block">
-              <HelpPanel />
-            </div>
+        {/* Right Controls - Stats & Help */}
+        <div className="flex flex-col gap-2 md:gap-3 pointer-events-auto">
+          <StatsPanel
+            total={entities.length}
+            shown={filteredEntities.length}
+          />
+          <div className="hidden md:block">
+            <HelpPanel layoutMode={layoutMode} />
           </div>
         </div>
-      </ReactFlow>
+      </div>
     </motion.div>
   );
 };
@@ -328,13 +340,49 @@ const StatsPanel: React.FC<{ total: number; shown: number }> = ({
   </div>
 );
 
-const HelpPanel: React.FC = () => (
+const LayoutControl: React.FC<{
+  layoutMode: string;
+  setLayoutMode: (mode: "flow" | "ring") => void;
+}> = ({ layoutMode, setLayoutMode }) => (
+  <div className="bg-black/40 backdrop-blur-md rounded-lg shadow-lg border border-white/20 p-2 flex items-center space-x-1">
+    <Grid3X3 className="w-5 h-5 text-gray-300 mx-1" />
+    {[
+      { key: "flow", label: "网络图", icon: Grid3X3 },
+      { key: "ring", label: "3D圆环", icon: Circle },
+    ].map(({ key, label, icon: Icon }) => (
+      <button
+        key={key}
+        onClick={() => setLayoutMode(key as "flow" | "ring")}
+        className={cn(
+          "px-2 md:px-3 py-1 md:py-1.5 rounded-md text-xs md:text-sm font-light transition-all duration-200 flex items-center space-x-1 md:space-x-1.5",
+          layoutMode === key
+            ? "bg-primary text-primary-foreground shadow"
+            : "text-gray-300 hover:bg-white/20 hover:text-white",
+        )}
+      >
+        <Icon className="w-3 h-3 md:w-4 md:h-4" />
+        <span>{label}</span>
+      </button>
+    ))}
+  </div>
+);
+
+const HelpPanel: React.FC<{ layoutMode: "flow" | "ring" }> = ({ layoutMode }) => (
   <div className="bg-black/40 backdrop-blur-md rounded-lg shadow-lg border border-white/20 p-3 pl-4 pr-5">
     <div className="flex items-center space-x-3">
       <HelpCircle className="w-6 h-6 text-gray-300" />
       <div className="text-xs text-gray-300 font-apple-text space-y-1">
-        <div>• Drag cards, scroll to zoom, drag background</div>
-        <div>• Click cards to view details</div>
+        {layoutMode === "flow" ? (
+          <>
+            <div>• Drag cards, scroll to zoom, drag background</div>
+            <div>• Click cards to view details</div>
+          </>
+        ) : (
+          <>
+            <div>• Click cards to flip and view details</div>
+            <div>• Cards rotate automatically in 3D space</div>
+          </>
+        )}
       </div>
     </div>
   </div>
