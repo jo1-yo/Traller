@@ -2,7 +2,7 @@
 
 萃流是一个先进的AI驱动的探索工具，旨在深度解析人物、公司及其错综复杂的关系网络。通过输入一个查询（如人物姓名、公司名称或相关链接），萃流能够利用大语言模型（LLM）进行深度分析，并以直观、可交互的关系图谱形式，为您呈现结构化的情报数据。
 
-![Traller UI Demo](frontend/logo%20Traller(1).png)
+![Traller UI Demo](frontend/public/images/logos/logo%20Traller(1).png)
 
 ---
 

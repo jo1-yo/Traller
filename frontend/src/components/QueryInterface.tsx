@@ -26,11 +26,11 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
   };
 
   const examples = [
-    '马云',
     'Elon Musk',
-    '字节跳动',
-    'https://www.tesla.com/about',
-    '李开复 AI',
+    'OpenAI',
+    'Tesla Inc',
+    'Mark Zuckerberg',
+    'Google DeepMind',
   ];
 
   const containerVariants = {
@@ -47,23 +47,42 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
   };
 
   return (
-    <div className={cn('w-full max-w-2xl mx-auto px-4 py-8', className)}>
-      <motion.div 
+    <div className={cn('w-full max-w-4xl mx-auto px-4 py-8', className)}>
+      {/* Logo in top-left corner */}
+      <motion.div
+        variants={itemVariants}
+        initial="initial"
+        animate="animate"
+        className="absolute top-8 left-8 z-20"
+      >
+        <img src="/images/logos/logo Traller(1).png" alt="Traller Logo" className="w-12 h-12 md:w-16 md:h-16" />
+      </motion.div>
+
+      <motion.div
         variants={containerVariants}
         initial="initial"
         animate="animate"
-        className="text-center"
+        className="text-center bg-black/10 backdrop-blur-md rounded-3xl p-8 md:p-12 mx-4"
       >
-        <motion.div variants={itemVariants} className="flex items-center justify-center mb-4">
-          <img src="/logo Traller(1).png" alt="Traller Logo" className="w-24 h-24" />
+        <motion.div variants={itemVariants} className="mb-8">
+          <motion.div className="flex justify-center">
+            <motion.img
+              src="/images/logos/logo title main-64.png"
+              alt="Traller"
+              className="h-16 md:h-24 lg:h-32 w-auto object-contain logo-glow"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            />
+          </motion.div>
         </motion.div>
 
-        <motion.h1 variants={itemVariants} className="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-white to-brand-light-cyan tracking-tight mb-3">
-          萃流
-        </motion.h1>
-        
-        <motion.p variants={itemVariants} className="text-lg text-gray-300 mb-12">
-          AI驱动的深度人物情报与关系网络探索平台
+        <motion.p variants={itemVariants} className="text-lg md:text-xl font-apple-display text-gray-200 mb-4 px-4">
+          AI-Powered Intelligence & Relationship Network Explorer
+        </motion.p>
+
+        <motion.p variants={itemVariants} className="text-sm md:text-base font-apple-text text-gray-400 mb-12 md:mb-16 px-4">
+          Discover deep insights and complex relationships with advanced AI analysis
         </motion.p>
       </motion.div>
 
@@ -79,7 +98,7 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="输入 Elon Musk 试试..."
+              placeholder="Try searching for 'Elon Musk' or 'OpenAI'..."
               className="input"
               disabled={isLoading}
             />
@@ -101,12 +120,12 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
                   {isLoading ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>分析中</span>
+                      <span>Analyzing</span>
                     </>
                   ) : (
                     <>
                       <Wand2 className="w-5 h-5" />
-                      <span>探索</span>
+                      <span>Explore</span>
                     </>
                   )}
                 </motion.div>
@@ -123,14 +142,14 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
         transition={{ delay: 0.3 }}
         className="mt-6"
       >
-        <div className="flex flex-wrap justify-center items-center gap-3">
-          <span className="text-sm text-gray-400">示例:</span>
+        <div className="flex flex-wrap justify-center items-center gap-2 md:gap-3 px-4">
+          <span className="text-sm text-gray-400 font-light mb-2 w-full md:w-auto md:mb-0">Examples:</span>
           {examples.map((example) => (
             <button
               key={example}
               onClick={() => !isLoading && setQuery(example)}
               disabled={isLoading}
-              className="btn-secondary"
+              className="btn-secondary text-xs md:text-sm"
             >
               {example}
             </button>
@@ -159,7 +178,7 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
                   />
                 ))}
               </div>
-              <span className="text-sm">AI正在深度分析中，请耐心等待... (约需1-2分钟)</span>
+              <span className="text-sm font-light">AI is performing deep analysis, please wait... (1-2 minutes)</span>
             </motion.div>
           )}
           {error && (

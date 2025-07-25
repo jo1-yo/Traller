@@ -48,10 +48,22 @@ function App() {
   };
 
   return (
-    <div className={cn(
-      "min-h-screen w-full bg-background transition-colors duration-500",
-      "bg-dots" // 添加这个class
-    )}>
+    <div className="relative min-h-screen w-full overflow-hidden">
+      {/* 背景视频 */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      >
+        <source src="/videos/background.mp4" type="video/mp4" />
+      </video>
+
+      {/* 视频遮罩层 */}
+      <div className="absolute inset-0 bg-black/60 z-5"></div>
+
+      {/* 内容层 */}
       <div className="relative z-10 container mx-auto px-4">
         {!queryResult ? (
           /* 查询界面 */
@@ -66,23 +78,23 @@ function App() {
           /* 结果展示界面 */
           <div className="h-screen flex flex-col">
             {/* 顶部导航栏 */}
-            <div className="bg-card/80 backdrop-blur-sm border-b border-border px-6 py-3 flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <img src="/logo Traller(1).png" alt="Traller Logo" className="w-8 h-8" />
-                <h1 className="text-xl font-bold text-foreground">萃流</h1>
-                <div className="text-sm text-muted-foreground">
-                  查询: <span className="font-medium text-foreground">{queryResult.originalQuery}</span>
+            <div className="bg-black/40 backdrop-blur-md border-b border-white/20 px-4 md:px-6 py-3 flex items-center justify-between">
+              <div className="flex items-center space-x-2 md:space-x-4">
+                <img src="/images/logos/logo Traller(1).png" alt="Traller Logo" className="w-6 h-6 md:w-8 md:h-8" />
+                <img src="/images/logos/logo title main-64.png" alt="Traller" className="h-5 md:h-6 w-auto object-contain" />
+                <div className="hidden md:block text-sm text-gray-300 font-apple-text">
+                  Query: <span className="font-medium text-white">{queryResult.originalQuery}</span>
                 </div>
               </div>
-              <div className="flex items-center space-x-3">
-                <div className="text-sm text-muted-foreground">
-                  找到 {queryResult.entities.length} 个实体
+              <div className="flex items-center space-x-2 md:space-x-3">
+                <div className="hidden sm:block text-sm text-gray-300 font-apple-text">
+                  Found {queryResult.entities.length} entities
                 </div>
                 <button
                   onClick={handleNewQuery}
-                  className="px-4 py-2 text-sm rounded-md font-semibold text-primary-foreground bg-primary hover:bg-primary/90 transition-colors"
+                  className="px-3 md:px-4 py-2 text-xs md:text-sm rounded-md font-apple-text text-white bg-gradient-to-r from-brand-light-blue to-brand-cyan hover:opacity-90 transition-opacity"
                 >
-                  新查询
+                  New Query
                 </button>
               </div>
             </div>

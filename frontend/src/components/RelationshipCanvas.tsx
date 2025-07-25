@@ -146,24 +146,26 @@ export const RelationshipCanvas: React.FC<RelationshipCanvasProps> = ({
         className="bg-dots"
       >
         <Background />
-        <Controls className="!bottom-10 !left-auto !right-5 !top-auto !m-0 !transform-none" />
+        <Controls className="!bottom-5 md:!bottom-10 !left-auto !right-3 md:!right-5 !top-auto !m-0 !transform-none" />
         <MiniMap
           nodeColor={(n: Node) => n.data.isProtagonist ? 'hsl(var(--primary))' : getRelationshipScoreColor(n.data.entity.relationship_score)}
           nodeStrokeWidth={3}
           pannable
-          className="!bottom-10 !left-5 !h-40 !w-60 !border-2 !border-border !bg-card/80 !shadow-xl"
+          className="!bottom-5 md:!bottom-10 !left-3 md:!left-5 !h-32 md:!h-40 !w-48 md:!w-60 !border-2 !border-white/20 !bg-black/40 !shadow-xl backdrop-blur-md"
         />
 
-        <div className="absolute top-5 left-5 right-5 flex justify-between items-start pointer-events-none">
+        <div className="absolute top-3 md:top-5 left-3 md:left-5 right-3 md:right-5 flex flex-col md:flex-row justify-between items-start gap-3 md:gap-0 pointer-events-none">
           {/* Left Controls - Filters */}
-          <div className="flex flex-col gap-3 pointer-events-auto">
+          <div className="flex flex-col gap-2 md:gap-3 pointer-events-auto">
             <FilterControl filter={filter} setFilter={setFilter} />
           </div>
 
           {/* Right Controls - Stats & Help */}
-          <div className="flex flex-col gap-3 pointer-events-auto">
+          <div className="flex flex-col gap-2 md:gap-3 pointer-events-auto">
             <StatsPanel total={entities.length} shown={filteredEntities.length} />
-            <HelpPanel />
+            <div className="hidden md:block">
+              <HelpPanel />
+            </div>
           </div>
         </div>
       </ReactFlow>
@@ -177,25 +179,25 @@ const FilterControl: React.FC<{
   filter: string;
   setFilter: (f: 'all' | 'people' | 'company' | 'event') => void;
 }> = ({ filter, setFilter }) => (
-  <div className="bg-card/80 backdrop-blur-sm rounded-lg shadow-lg border p-2 flex items-center space-x-1">
-    <Filter className="w-5 h-5 text-muted-foreground mx-1" />
+  <div className="bg-black/40 backdrop-blur-md rounded-lg shadow-lg border border-white/20 p-2 flex items-center space-x-1">
+    <Filter className="w-5 h-5 text-gray-300 mx-1" />
     {[
-      { key: 'all', label: '全部' },
-      { key: 'people', label: '人物', icon: Users },
-      { key: 'company', label: '公司', icon: Building },
-      { key: 'event', label: '事件', icon: Calendar }, // Added this
+      { key: 'all', label: 'All' },
+      { key: 'people', label: 'People', icon: Users },
+      { key: 'company', label: 'Companies', icon: Building },
+      { key: 'event', label: 'Events', icon: Calendar },
     ].map(({ key, label, icon: Icon }) => (
       <button
         key={key}
         onClick={() => setFilter(key as any)}
         className={cn(
-          'px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-1.5',
+          'px-2 md:px-3 py-1 md:py-1.5 rounded-md text-xs md:text-sm font-light transition-all duration-200 flex items-center space-x-1 md:space-x-1.5',
           filter === key
             ? 'bg-primary text-primary-foreground shadow'
-            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+            : 'text-gray-300 hover:bg-white/20 hover:text-white'
         )}
       >
-        {Icon && <Icon className="w-4 h-4" />}
+        {Icon && <Icon className="w-3 h-3 md:w-4 md:h-4" />}
         <span>{label}</span>
       </button>
     ))}
@@ -203,24 +205,24 @@ const FilterControl: React.FC<{
 );
 
 const StatsPanel: React.FC<{ total: number; shown: number }> = ({ total, shown }) => (
-  <div className="bg-card/80 backdrop-blur-sm rounded-lg shadow-lg border p-3 pl-4 pr-5">
+  <div className="bg-black/40 backdrop-blur-md rounded-lg shadow-lg border border-white/20 p-3 pl-4 pr-5">
     <div className="flex items-center space-x-3">
-      <Sigma className="w-6 h-6 text-muted-foreground" />
-      <div className="text-sm">
-        <div className="text-muted-foreground">总实体 / <span className="font-semibold text-foreground">{total}</span></div>
-        <div className="text-muted-foreground">当前显示 / <span className="font-semibold text-foreground">{shown}</span></div>
+      <Sigma className="w-6 h-6 text-gray-300" />
+      <div className="text-sm font-apple-text">
+        <div className="text-gray-300">Total Entities / <span className="font-medium text-white">{total}</span></div>
+        <div className="text-gray-300">Currently Shown / <span className="font-medium text-white">{shown}</span></div>
       </div>
     </div>
   </div>
 );
 
 const HelpPanel: React.FC = () => (
-  <div className="bg-card/80 backdrop-blur-sm rounded-lg shadow-lg border p-3 pl-4 pr-5">
+  <div className="bg-black/40 backdrop-blur-md rounded-lg shadow-lg border border-white/20 p-3 pl-4 pr-5">
     <div className="flex items-center space-x-3">
-      <HelpCircle className="w-6 h-6 text-muted-foreground" />
-      <div className="text-xs text-muted-foreground space-y-1">
-        <div>• 拖拽卡片、滚轮缩放、拖动背景</div>
-        <div>• 点击卡片查看详情</div>
+      <HelpCircle className="w-6 h-6 text-gray-300" />
+      <div className="text-xs text-gray-300 font-apple-text space-y-1">
+        <div>• Drag cards, scroll to zoom, drag background</div>
+        <div>• Click cards to view details</div>
       </div>
     </div>
   </div>

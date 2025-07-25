@@ -112,10 +112,10 @@ export const EntityCard: React.FC<EntityCardProps> = ({
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-card-foreground truncate text-base">
+              <h3 className="font-apple-display font-semibold text-card-foreground truncate text-base">
                 {entity.name}
               </h3>
-              <div className="flex items-center text-xs text-muted-foreground mt-2">
+              <div className="flex items-center text-xs text-muted-foreground mt-2 font-apple-text">
                 <div className="flex items-center gap-1 mr-3">
                   {tagIcon[entity.tag]}
                   <span>{getTagDisplayName()}</span>
@@ -129,13 +129,13 @@ export const EntityCard: React.FC<EntityCardProps> = ({
           </div>
           
           {isProtagonist && (
-            <div className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-full">
+            <div className="text-xs font-apple-text font-bold text-primary bg-primary/10 px-2 py-1 rounded-full">
               主角
             </div>
           )}
         </div>
         
-        <p className="text-xs text-muted-foreground line-clamp-2 mt-2">
+        <p className="text-xs text-muted-foreground line-clamp-2 mt-2 font-apple-text">
           {entity.summary}
         </p>
 
