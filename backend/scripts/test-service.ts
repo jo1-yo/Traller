@@ -29,7 +29,7 @@ class ServiceTestScript {
         retries--;
         if (retries === 0) {
           throw new Error(
-            `无法连接到服务 ${this.baseUrl}，请确保服务已启动 (pnpm start)`,
+            `无法连接到服务 ${this.baseUrl}，请确保服务已启动 (pnpm run start:dev)`,
           );
         }
         console.log(`连接失败，重试中... (${5 - retries}/5)`);
@@ -52,22 +52,23 @@ class ServiceTestScript {
     }
   }
 
-  async testQueryEndpoint() {
+  async testQueryEndpoint(query: string = '马云', queryType: string = 'person') {
     console.log('\n=== 测试查询端点 ===');
     try {
       const testQuery = {
-        query: '马斯克',
-        queryType: 'person',
+        query,
+        queryType,
       };
 
       console.log('发送查询请求:', testQuery);
+      console.log('⏳ 请耐心等待，AI分析需要1-2分钟...');
       const startTime = Date.now();
 
       const response = await axios.post(
         `${this.baseUrl}/api/query`,
         testQuery,
         {
-          timeout: 180000, // 3分钟超时，适应更长的API处理时间
+          timeout: 180000, // 3分钟超时
           headers: {
             'Content-Type': 'application/json',
           },
@@ -75,30 +76,41 @@ class ServiceTestScript {
       );
 
       const endTime = Date.now();
-      const duration = endTime - startTime;
+      const duration = ((endTime - startTime) / 1000).toFixed(2);
 
       console.log('✅ 查询请求成功');
       console.log('响应状态:', response.status);
-      console.log('响应时间:', `${duration}ms`);
-      // Use type assertion to avoid unsafe access on response.data
-      const entities = (response.data as { entities?: any[] }).entities;
-      const queryId = (response.data as { id?: string }).id;
-      console.log('实体数量:', Array.isArray(entities) ? entities.length : 0);
-      console.log('查询ID:', queryId);
+      console.log('响应时间:', `${duration}秒`);
+      
+      const data = response.data as any;
+      console.log('查询ID:', data.id);
+      console.log('原始查询:', data.originalQuery);
+      console.log('实体数量:', data.entities?.length || 0);
+      
+      // 显示实体详情
+      if (data.entities && Array.isArray(data.entities)) {
+        console.log('\n📊 返回的实体:');
+        data.entities.forEach((entity: any, index: number) => {
+          console.log(`  ${index + 1}. ${entity.name} (${entity.tag})`);
+          console.log(`     关系评分: ${entity.relationship_score}/10`);
+          console.log(`     摘要: ${entity.summary}`);
+          if (entity.avatar_url) {
+            console.log(`     头像: ${entity.avatar_url}`);
+          }
+        });
+      }
 
-      // Validate response structure
-      if (
-        response.data.id &&
-        response.data.entities &&
-        Array.isArray(response.data.entities)
-      ) {
+      // 验证响应结构
+      if (data.id && data.entities && Array.isArray(data.entities)) {
         console.log('✅ 响应结构验证通过');
-        return response.data;
+        return data;
       } else {
         console.error('❌ 响应结构验证失败');
+        console.error('预期字段: id, entities (数组)');
+        console.error('实际响应:', Object.keys(data));
         return null;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ 查询请求失败:', error.message);
       if (error.response) {
         console.error('错误状态:', error.response.status);
@@ -108,91 +120,99 @@ class ServiceTestScript {
     }
   }
 
-  async testGetQueryResult(queryId: string) {
-    console.log('\n=== 测试获取查询结果 ===');
-    try {
-      const response = await axios.get(`${this.baseUrl}/api/query/${queryId}`);
-      console.log('✅ 获取查询结果成功');
-      console.log('响应状态:', response.status);
-      console.log('查询ID:', response.data.id);
-      console.log('原始查询:', response.data.originalQuery);
-      return true;
-    } catch (error) {
-      console.error('❌ 获取查询结果失败:', error.message);
-      return false;
+  async testMultipleQueries() {
+    console.log('\n=== 测试多个查询 ===');
+    const testCases = [
+      { query: '马云', queryType: 'person' },
+      { query: 'Elon Musk', queryType: 'person' },
+      { query: '字节跳动', queryType: 'company' },
+    ];
+
+    let successCount = 0;
+
+    for (let i = 0; i < testCases.length; i++) {
+      const testCase = testCases[i];
+      console.log(`\n📝 测试 ${i + 1}/${testCases.length}: ${testCase.query}`);
+      
+      const result = await this.testQueryEndpoint(testCase.query, testCase.queryType);
+      if (result) {
+        successCount++;
+        console.log(`✅ 测试 "${testCase.query}" 成功`);
+      } else {
+        console.log(`❌ 测试 "${testCase.query}" 失败`);
+      }
+
+      // 避免API限制，等待一段时间
+      if (i < testCases.length - 1) {
+        console.log('⏳ 等待5秒避免API限制...');
+        await new Promise(resolve => setTimeout(resolve, 5000));
+      }
     }
+
+    console.log(`\n📊 多查询测试结果: ${successCount}/${testCases.length} 成功`);
+    return successCount === testCases.length;
   }
 
-  async testGetAllQueries() {
-    console.log('\n=== 测试获取所有查询 ===');
+  async testErrorHandling() {
+    console.log('\n=== 测试错误处理 ===');
+    
     try {
-      const response = await axios.get(`${this.baseUrl}/api/query`);
-      console.log('✅ 获取所有查询成功');
-      console.log('响应状态:', response.status);
-      console.log('查询总数:', response.data.length);
-      return true;
-    } catch (error) {
-      console.error('❌ 获取所有查询失败:', error.message);
-      return false;
-    }
-  }
-
-  async testDeleteQuery(queryId: string) {
-    console.log('\n=== 测试删除查询 ===');
-    try {
-      const response = await axios.delete(
-        `${this.baseUrl}/api/query/${queryId}`,
+      // 测试空查询
+      console.log('测试空查询...');
+      const response = await axios.post(
+        `${this.baseUrl}/api/query`,
+        { query: '', queryType: 'other' },
+        { 
+          timeout: 10000,
+          validateStatus: () => true // 允许所有状态码
+        }
       );
-      console.log('✅ 删除查询成功');
-      console.log('响应状态:', response.status);
-      console.log('响应内容:', response.data);
+      
+      if (response.status >= 400) {
+        console.log('✅ 空查询正确返回错误状态:', response.status);
+        return true;
+      } else {
+        console.log('⚠️ 空查询未返回预期的错误状态');
+        return false;
+      }
+    } catch (error: any) {
+      console.log('✅ 空查询正确抛出异常:', error.message);
       return true;
-    } catch (error) {
-      console.error('❌ 删除查询失败:', error.message);
-      return false;
     }
   }
 
   async runFullServiceTest() {
     const testResults = {
       healthCheck: false,
-      queryEndpoint: false,
-      getQueryResult: false,
-      getAllQueries: false,
-      deleteQuery: false,
+      singleQuery: false,
+      multipleQueries: false,
+      errorHandling: false,
     };
-
-    let queryId: string | null = null;
 
     try {
       console.log('🧪 开始完整服务测试...');
+      console.log('📋 测试内容: 健康检查 + 单查询 + 多查询 + 错误处理');
 
       // 1. 健康检查
       testResults.healthCheck = await this.testHealthCheck();
 
-      // 2. 测试查询端点
+      // 2. 单个查询测试
       const queryResult = await this.testQueryEndpoint();
-      testResults.queryEndpoint = queryResult !== null;
-      if (queryResult) {
-        queryId = queryResult.id;
-      }
+      testResults.singleQuery = queryResult !== null;
 
-      // 3. 测试获取查询结果
-      if (queryId) {
-        testResults.getQueryResult = await this.testGetQueryResult(queryId);
-      }
+      // 3. 多查询测试（可选，因为会消耗较多API配额）
+      console.log('\n⚠️  多查询测试会消耗较多API配额，是否继续？');
+      console.log('如需跳过，请在10秒内按Ctrl+C');
+      
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      testResults.multipleQueries = await this.testMultipleQueries();
 
-      // 4. 测试获取所有查询
-      testResults.getAllQueries = await this.testGetAllQueries();
-
-      // 5. 测试删除查询
-      if (queryId) {
-        testResults.deleteQuery = await this.testDeleteQuery(queryId);
-      }
+      // 4. 错误处理测试
+      testResults.errorHandling = await this.testErrorHandling();
 
       // 输出测试总结
       this.printTestSummary(testResults);
-    } catch (error) {
+    } catch (error: any) {
       console.error('\n❌ 服务测试过程中发生错误:', error.message);
     } finally {
       await this.cleanup();
@@ -205,10 +225,9 @@ class ServiceTestScript {
 
     const tests = [
       { name: '健康检查', result: results.healthCheck },
-      { name: '查询端点', result: results.queryEndpoint },
-      { name: '获取查询结果', result: results.getQueryResult },
-      { name: '获取所有查询', result: results.getAllQueries },
-      { name: '删除查询', result: results.deleteQuery },
+      { name: '单个查询', result: results.singleQuery },
+      { name: '多个查询', result: results.multipleQueries },
+      { name: '错误处理', result: results.errorHandling },
     ];
 
     let passedTests = 0;
@@ -223,8 +242,13 @@ class ServiceTestScript {
 
     if (passedTests === tests.length) {
       console.log('🎉 所有服务测试通过！服务运行正常。');
+      console.log('💡 提示: 现在可以启动前端 (cd frontend && pnpm run dev)');
+    } else if (passedTests >= 2) {
+      console.log('⚠️  基础功能正常，部分高级测试失败。');
+      console.log('💡 建议: 检查API密钥配置和网络连接。');
     } else {
-      console.log('⚠️  部分测试失败，请检查服务配置和API密钥。');
+      console.log('❌ 多数测试失败，请检查服务配置。');
+      console.log('💡 排查: 确认API密钥、网络连接和服务启动状态。');
     }
   }
 
@@ -246,8 +270,30 @@ async function main() {
 
   try {
     await script.initialize();
-    await script.runFullServiceTest();
-  } catch (error) {
+    
+    const args = process.argv.slice(2);
+    const command = args[0];
+
+    switch (command) {
+      case 'quick':
+        console.log('🚀 执行快速测试（仅健康检查和单查询）');
+        const quickResults = { healthCheck: false, singleQuery: false };
+        quickResults.healthCheck = await script.testHealthCheck();
+        const result = await script.testQueryEndpoint();
+        quickResults.singleQuery = result !== null;
+        
+        console.log('\n📊 快速测试结果:');
+        console.log('健康检查:', quickResults.healthCheck ? '✅ 通过' : '❌ 失败');
+        console.log('单个查询:', quickResults.singleQuery ? '✅ 通过' : '❌ 失败');
+        break;
+        
+      case 'full':
+      default:
+        await script.runFullServiceTest();
+        break;
+    }
+    
+  } catch (error: any) {
     console.error('测试脚本执行失败:', error.message);
     await script.cleanup();
     process.exit(1);

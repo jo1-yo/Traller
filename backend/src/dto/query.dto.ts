@@ -19,7 +19,7 @@ export class EntityResponseDto {
   id: number;
   name: string;
   tag: 'people' | 'company';
-  avatar_url: string | null;
+  avatar_url: string;
   relationship_score: number;
   summary: string;
   description: string;
