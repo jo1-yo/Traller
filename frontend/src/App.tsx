@@ -6,6 +6,8 @@ import { SearchHistory } from "./components/SearchHistory";
 import { queryAPI } from "./services/api";
 import type { Entity, QueryResponse, ApiError } from "./types";
 import { cn } from "./lib/utils";
+import { Toaster } from "sonner";
+import { P5Background } from "./components/P5Background";
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -66,19 +68,10 @@ function App() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      {/* 背景视频 */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0"
-      >
-        <source src="/videos/background.mp4" type="video/mp4" />
-      </video>
-
-      {/* 视频遮罩层 */}
-      <div className="absolute inset-0 bg-black/60 z-5"></div>
+      {/* P5.js 动态背景 */}
+      <div className="absolute top-0 left-0 w-full h-full z-0">
+        <P5Background />
+      </div>
 
       {/* 内容层 */}
       <div className="relative z-10 container mx-auto px-4">
@@ -154,6 +147,7 @@ function App() {
           onClose={handleCloseModal}
         />
       </div>
+      <Toaster />
     </div>
   );
 }
