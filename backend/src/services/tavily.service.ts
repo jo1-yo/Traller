@@ -91,15 +91,11 @@ export class TavilyService {
       // Extract images from response
       const images = response.data.images || [];
       if (images.length > 0) {
-        // Filter for valid image URLs and prefer the first one
-        const validImage = images.find(
-          (url) =>
-            this.isValidImageUrl(url) && this.isHighQualityImage(url, tag),
-        );
-
-        if (validImage) {
-          this.logger.log(`Found avatar for ${name}: ${validImage}`);
-          return validImage;
+        // Return the first available image without strict filtering
+        const firstImage = images[0];
+        if (firstImage) {
+          this.logger.log(`Found avatar for ${name}: ${firstImage}`);
+          return firstImage;
         }
       }
 
@@ -128,15 +124,12 @@ export class TavilyService {
           );
 
         const fallbackImages = fallbackResponse.data.images || [];
-        const validFallbackImage = fallbackImages.find((url) =>
-          this.isValidImageUrl(url),
-        );
-
-        if (validFallbackImage) {
+        if (fallbackImages.length > 0) {
+          const fallbackImage = fallbackImages[0];
           this.logger.log(
-            `Found fallback avatar for ${name}: ${validFallbackImage}`,
+            `Found fallback avatar for ${name}: ${fallbackImage}`,
           );
-          return validFallbackImage;
+          return fallbackImage;
         }
       }
 
