@@ -34,22 +34,33 @@ export class PerplexityService {
 
   constructor(private configService: ConfigService) {
     // 优先使用环境变量，否则使用硬编码密钥
-    this.apiKey = this.configService.get<string>('PERPLEXITY_API_KEY') || 'pplx-dev-jd3sqGjVa3LTGRAUItDiwoT7zvlXvsRz';
-    this.apiUrl = this.configService.get<string>('PERPLEXITY_API_URL') || 'https://api.perplexity.ai';
-    
-    if (!this.apiKey || this.apiKey === 'pplx-dev-jd3sqGjVa3LTGRAUItDiwoT7zvlXvsRz') {
-      this.logger.warn('⚠️  使用默认Perplexity API密钥，可能无效！请在.env文件中配置PERPLEXITY_API_KEY');
+    this.apiKey =
+      this.configService.get<string>('PERPLEXITY_API_KEY') ||
+      'pplx-dev-jd3sqGjVa3LTGRAUItDiwoT7zvlXvsRz';
+    this.apiUrl =
+      this.configService.get<string>('PERPLEXITY_API_URL') ||
+      'https://api.perplexity.ai';
+
+    if (
+      !this.apiKey ||
+      this.apiKey === 'pplx-dev-jd3sqGjVa3LTGRAUItDiwoT7zvlXvsRz'
+    ) {
+      this.logger.warn(
+        '⚠️  使用默认Perplexity API密钥，可能无效！请在.env文件中配置PERPLEXITY_API_KEY',
+      );
     }
   }
 
   async searchInformation(query: string): Promise<string> {
     const maxRetries = 3;
-    let lastError: any;
+    let lastError: Error | null = null;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        this.logger.log(`Perplexity API attempt ${attempt}/${maxRetries} for query: ${query}`);
-      const prompt = `请搜索关于"${query}"的全面深度信息，构建完整的人物/公司关系网络。请包括：
+        this.logger.log(
+          `Perplexity API attempt ${attempt}/${maxRetries} for query: ${query}`,
+        );
+        const prompt = `请搜索关于"${query}"的全面深度信息，构建完整的人物/公司关系网络。请包括：
 
 ## 核心信息
 1. **基本信息**：姓名、年龄、性别、国籍、现任职务、公司职位
@@ -80,28 +91,28 @@ export class PerplexityService {
 
 要求信息尽可能详细、准确、最新，包含丰富的上下文背景和深度分析。`;
 
-      const response: AxiosResponse<PerplexityResponse> = await axios.post(
-        `${this.apiUrl}/chat/completions`,
-        {
-          model: 'sonar-pro',
-          messages: [
-            {
-              role: 'user',
-              content: prompt,
-            },
-          ],
-          stream: false, // 设置为false以获取完整响应，避免流式处理的复杂性
-          max_tokens: 8000, // 大幅提高token数以支持更丰富的上下文
-          temperature: 0.3, // 降低温度以获得更稳定的结果
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json',
+        const response: AxiosResponse<PerplexityResponse> = await axios.post(
+          `${this.apiUrl}/chat/completions`,
+          {
+            model: 'sonar-pro',
+            messages: [
+              {
+                role: 'user',
+                content: prompt,
+              },
+            ],
+            stream: false, // 设置为false以获取完整响应，避免流式处理的复杂性
+            max_tokens: 8000, // 大幅提高token数以支持更丰富的上下文
+            temperature: 0.3, // 降低温度以获得更稳定的结果
           },
-          timeout: 180000, // 增加到3分钟超时以处理更长的上下文
-        },
-      );
+          {
+            headers: {
+              Authorization: `Bearer ${this.apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            timeout: 180000, // 增加到3分钟超时以处理更长的上下文
+          },
+        );
 
         if (response.data.choices && response.data.choices.length > 0) {
           this.logger.log(`✅ Perplexity API successful on attempt ${attempt}`);
@@ -110,21 +121,30 @@ export class PerplexityService {
 
         throw new Error('No response from Perplexity API');
       } catch (error) {
-        lastError = error;
-        this.logger.warn(`❌ Perplexity API attempt ${attempt} failed:`, (error as Error).message);
-        
+        lastError = error as Error;
+        this.logger.warn(
+          `❌ Perplexity API attempt ${attempt} failed:`,
+          (error as Error).message,
+        );
+
         if (attempt === maxRetries) {
-          this.logger.error('All Perplexity API attempts failed:', (error as Error).message);
+          this.logger.error(
+            'All Perplexity API attempts failed:',
+            (error as Error).message,
+          );
           break;
         }
-        
+
         // 重试前等待
         const waitTime = attempt * 2000; // 2秒, 4秒, 6秒
         this.logger.log(`⏳ Waiting ${waitTime}ms before retry...`);
-        await new Promise(resolve => setTimeout(resolve, waitTime));
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
       }
     }
 
-    throw new Error(`Perplexity API error: ${lastError.message}`);
+    // Throw an error with the last encountered error message if all attempts fail
+    throw new Error(
+      `Perplexity API error: ${lastError?.message || 'Unknown error'}`,
+    );
   }
 }

@@ -27,11 +27,21 @@ export class GeminiService {
     private jsonRepairService: JsonRepairService,
   ) {
     // 优先使用环境变量，否则使用硬编码密钥
-    this.apiKey = this.configService.get<string>('OPENROUTER_API_KEY') || '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';
-    this.apiUrl = this.configService.get<string>('OPENROUTER_API_URL') || 'https://openrouter.ai/api/v1/chat/completions';
-    
-    if (this.apiKey === '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' && !this.configService.get<string>('OPENROUTER_API_KEY')) {
-      this.logger.warn('⚠️  您正在使用硬编码的API密钥。为了安全起见，建议在 .env 文件中配置 OPENROUTER_API_KEY');
+    this.apiKey =
+      this.configService.get<string>('OPENROUTER_API_KEY') ||
+      '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';
+    this.apiUrl =
+      this.configService.get<string>('OPENROUTER_API_URL') ||
+      'https://openrouter.ai/api/v1/chat/completions';
+
+    if (
+      this.apiKey ===
+        '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' &&
+      !this.configService.get<string>('OPENROUTER_API_KEY')
+    ) {
+      this.logger.warn(
+        '⚠️  您正在使用硬编码的API密钥。为了安全起见，建议在 .env 文件中配置 OPENROUTER_API_KEY',
+      );
     }
   }
 
@@ -110,7 +120,8 @@ ${perplexityResponse}
         messages: [
           {
             role: 'system',
-            content: '你是一个专业的数据结构化专家，专门将非结构化的人物信息转换为标准化的JSON格式。你必须严格按照指定的JSON格式返回数据，直接返回完整且有效的JSON数组。重要：确保JSON格式完全正确，所有字符串用双引号，所有括号正确闭合，不要包含任何额外的文字、解释或代码块标记。如果内容可能超长，请优先保证JSON完整性。',
+            content:
+              '你是一个专业的数据结构化专家，专门将非结构化的人物信息转换为标准化的JSON格式。你必须严格按照指定的JSON格式返回数据，直接返回完整且有效的JSON数组。重要：确保JSON格式完全正确，所有字符串用双引号，所有括号正确闭合，不要包含任何额外的文字、解释或代码块标记。如果内容可能超长，请优先保证JSON完整性。',
           },
           {
             role: 'user',
@@ -121,23 +132,28 @@ ${perplexityResponse}
         max_tokens: 6000, // 减少到6000以避免JSON截断问题
       };
 
-      const response = await axios.post<OpenRouterResponse>(this.apiUrl, payload, {
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://traller.ai',
-          'X-Title': 'Traller AI - Persona Intelligence Explorer',
+      const response = await axios.post<OpenRouterResponse>(
+        this.apiUrl,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://traller.ai',
+            'X-Title': 'Traller AI - Persona Intelligence Explorer',
+          },
+          timeout: 180000,
         },
-        timeout: 180000,
-      });
+      );
 
       const content = response.data.choices[0]?.message?.content;
       if (!content) {
         throw new Error('No content in OpenRouter response');
       }
 
-      const structuredData = this.jsonRepairService.parse<EntityResponseDto[]>(content);
-      
+      const structuredData =
+        this.jsonRepairService.parse<EntityResponseDto[]>(content);
+
       // 验证数据格式
       if (!Array.isArray(structuredData)) {
         throw new Error('Response is not an array');
@@ -151,26 +167,34 @@ ${perplexityResponse}
         if (!entity.name) {
           throw new Error(`Entity missing name: ${JSON.stringify(entity)}`);
         }
-        if (!entity.tag || !['people', 'company', 'event'].includes(entity.tag)) {
+        if (
+          !entity.tag ||
+          !['people', 'company', 'event'].includes(entity.tag)
+        ) {
           throw new Error(`Entity has invalid tag: ${entity.tag}`);
         }
         if (!entity.summary) {
           throw new Error(`Entity missing summary: ${JSON.stringify(entity)}`);
         }
         if (!entity.description) {
-          throw new Error(`Entity missing description: ${JSON.stringify(entity)}`);
+          throw new Error(
+            `Entity missing description: ${JSON.stringify(entity)}`,
+          );
         }
         if (!Array.isArray(entity.links)) {
-          throw new Error(`Entity links is not an array: ${JSON.stringify(entity)}`);
+          throw new Error(
+            `Entity links is not an array: ${JSON.stringify(entity)}`,
+          );
         }
       }
 
-      this.logger.log(`✅ Successfully structured ${structuredData.length} entities`);
+      this.logger.log(
+        `✅ Successfully structured ${structuredData.length} entities`,
+      );
       return structuredData;
-
     } catch (error) {
       this.logger.error('Error calling Gemini API:', error.message);
       throw new Error(`Gemini API error: ${error.message}`);
     }
   }
-} 
+}

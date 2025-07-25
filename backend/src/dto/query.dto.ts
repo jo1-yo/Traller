@@ -33,3 +33,23 @@ export class QueryResponseDto {
   entities: EntityResponseDto[];
   createdAt: Date;
 }
+
+export class SearchHistoryItemDto {
+  id: string;
+  originalQuery: string;
+  queryType: string;
+  createdAt: Date;
+  entityCount: number;
+}
+
+export class PaginationDto {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+}
+
+export class SearchHistoryResponseDto {
+  results: SearchHistoryItemDto[];
+  pagination: PaginationDto;
+}

@@ -27,11 +27,20 @@ export class TavilyService {
 
   constructor(private configService: ConfigService) {
     // 优先使用环境变量，否则使用硬编码密钥
-    this.apiKey = this.configService.get<string>('TAVILY_API_KEY') || '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';
-    this.apiUrl = this.configService.get<string>('TAVILY_API_URL') || 'https://api.tavily.com';
-    
-    if (!this.apiKey || this.apiKey === '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') {
-      this.logger.warn('⚠️  使用默认Tavily API密钥，可能无效！请在.env文件中配置TAVILY_API_KEY');
+    this.apiKey =
+      this.configService.get<string>('TAVILY_API_KEY') ||
+      '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';
+    this.apiUrl =
+      this.configService.get<string>('TAVILY_API_URL') ||
+      'https://api.tavily.com';
+
+    if (
+      !this.apiKey ||
+      this.apiKey === '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'
+    ) {
+      this.logger.warn(
+        '⚠️  使用默认Tavily API密钥，可能无效！请在.env文件中配置TAVILY_API_KEY',
+      );
     }
   }
 

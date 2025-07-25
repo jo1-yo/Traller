@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { QueryInterface } from './components/QueryInterface';
 import { RelationshipCanvas } from './components/RelationshipCanvas';
 import { EntityDetailModal } from './components/EntityDetailModal';
+import { SearchHistory } from './components/SearchHistory';
 import { queryAPI } from './services/api';
 import type { Entity, QueryResponse, ApiError } from './types';
 import { cn } from './lib/utils';
@@ -47,6 +48,22 @@ function App() {
     setError(null);
   };
 
+  const handleSelectHistory = async (id: string) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await queryAPI.getQueryById(id);
+      setQueryResult(result);
+    } catch (err) {
+      const apiError = err as ApiError;
+      setError(apiError.message || 'Failed to load historical query');
+      console.error('History load error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       {/* 背景视频 */}
@@ -66,12 +83,21 @@ function App() {
       {/* 内容层 */}
       <div className="relative z-10 container mx-auto px-4">
         {!queryResult ? (
-          /* 查询界面 */
-          <div className="container mx-auto flex items-center justify-center min-h-screen">
-            <QueryInterface 
-              onSubmit={handleQuery} 
-              isLoading={isLoading} 
-              error={error}
+          /* Query interface and search history */
+          <div className="container mx-auto">
+            {/* Main query interface - centered */}
+            <div className="flex items-center justify-center min-h-screen">
+              <QueryInterface 
+                onSubmit={handleQuery} 
+                isLoading={isLoading} 
+                error={error}
+              />
+            </div>
+            
+            {/* Search history - appears below when scrolling */}
+            <SearchHistory 
+              onSelectHistory={handleSelectHistory}
+              className="px-4 md:px-6"
             />
           </div>
         ) : (

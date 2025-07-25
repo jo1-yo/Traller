@@ -29,6 +29,26 @@ export interface QueryResponse {
   createdAt: Date;
 }
 
+export interface SearchHistoryItem {
+  id: string;
+  originalQuery: string;
+  queryType: string;
+  createdAt: Date;
+  entityCount: number;
+}
+
+export interface Pagination {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+}
+
+export interface SearchHistoryResponse {
+  results: SearchHistoryItem[];
+  pagination: Pagination;
+}
+
 export interface ApiError {
   status: number;
   error: string;
