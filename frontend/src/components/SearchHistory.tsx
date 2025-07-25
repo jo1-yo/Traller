@@ -117,14 +117,14 @@ export const SearchHistory: React.FC<SearchHistoryProps> = ({
 
   const getQueryTypeColor = (type: string) => {
     switch (type) {
-      case "person":
-        return "bg-blue-500/20 text-blue-300 border-blue-500/30";
-      case "company":
-        return "bg-green-500/20 text-green-300 border-green-500/30";
-      case "link":
-        return "bg-purple-500/20 text-purple-300 border-purple-500/30";
+      case 'person':
+        return 'bg-blue-500';
+      case 'company':
+        return 'bg-teal-500';
+      case 'link':
+        return 'bg-purple-500';
       default:
-        return "bg-gray-500/20 text-gray-300 border-gray-500/30";
+        return 'bg-gray-500';
     }
   };
 
@@ -135,178 +135,81 @@ export const SearchHistory: React.FC<SearchHistoryProps> = ({
   return (
     <motion.div
       ref={observerRef}
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className={cn("w-full max-w-4xl mx-auto mt-16 mb-8", className)}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className={cn('w-full', className)}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-brand-light-blue to-brand-cyan flex items-center justify-center">
-            <svg
-              className="w-4 h-4 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <h2 className="text-xl font-semibold text-white font-apple-text">
-            Recent Searches
-          </h2>
-          {historyData && (
-            <span className="text-sm text-gray-400 font-apple-text">
-              {historyData.pagination.totalItems} queries
-            </span>
-          )}
-        </div>
-
-        {historyData && historyData.results.length > 3 && (
+      <div className="flex items-center justify-between mb-5 px-2">
+        <h2 className="text-base font-medium text-gray-400 font-apple-text tracking-wide">
+          Recent Searches
+        </h2>
+        {historyData && historyData.results.length > 6 && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center space-x-2 px-3 py-1.5 text-sm text-gray-300 hover:text-white transition-colors font-apple-text"
+            className="text-sm text-gray-500 hover:text-white transition-colors font-apple-text"
           >
-            <span>{isExpanded ? "Show Less" : "Show All"}</span>
-            <motion.svg
-              animate={{ rotate: isExpanded ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </motion.svg>
+            {isExpanded ? 'Show Less' : 'Show All'}
           </button>
         )}
       </div>
 
-      {/* Loading State */}
       {loading && !historyData && (
-        <div className="flex items-center justify-center py-12">
-          <div className="flex items-center space-x-3 text-gray-400">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-cyan"></div>
-            <span className="font-apple-text">Loading search history...</span>
-          </div>
+        <div className="flex items-center justify-center p-8">
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-brand-cyan"></div>
         </div>
       )}
 
-      {/* Error State */}
       {error && !historyData && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-center">
-          <p className="text-red-300 font-apple-text">{error}</p>
-          <button
-            onClick={loadInitialHistory}
-            className="mt-2 text-sm text-red-400 hover:text-red-300 transition-colors font-apple-text"
-          >
-            Try Again
-          </button>
+        <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-3 text-center text-sm">
+          <p className="text-red-400 font-apple-text">{error}</p>
         </div>
       )}
 
-      {/* History Grid */}
-      {historyData && historyData.results.length > 0 && (
-        <div className="space-y-4">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={isExpanded ? "expanded" : "collapsed"}
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-            >
-              {historyData.results
-                .slice(0, isExpanded ? undefined : 3)
-                .map((item, index) => (
-                  <motion.button
-                    key={item.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.4,
-                      delay: index * 0.1,
-                      ease: "easeOut",
-                    }}
-                    onClick={() => onSelectHistory(item.id)}
-                    className="group bg-black/40 backdrop-blur-md border border-white/10 rounded-lg p-4 text-left hover:border-brand-cyan/50 hover:bg-black/60 transition-all duration-300"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <span
-                        className={cn(
-                          "inline-flex px-2 py-1 text-xs font-medium rounded-md border font-apple-text",
-                          getQueryTypeColor(item.queryType),
-                        )}
-                      >
-                        {getQueryTypeDisplay(item.queryType)}
-                      </span>
-                      <span className="text-xs text-gray-400 font-apple-text">
-                        {formatDate(item.createdAt)}
-                      </span>
-                    </div>
-
-                    <h3 className="text-white font-medium mb-2 line-clamp-2 font-apple-text group-hover:text-brand-cyan transition-colors">
+      {historyData && (
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="space-y-2"
+          >
+            {historyData.results
+              .slice(0, isExpanded ? undefined : 6)
+              .map((item, index) => (
+                <motion.button
+                  key={item.id}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{
+                    duration: 0.3,
+                    delay: index * 0.05,
+                    ease: 'easeOut',
+                  }}
+                  onClick={() => onSelectHistory(item.id)}
+                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/20 transition-all duration-200 group"
+                >
+                  <div className="flex items-center space-x-4">
+                    <div
+                      className={cn(
+                        'w-1.5 h-6 rounded-full',
+                        getQueryTypeColor(item.queryType),
+                      )}
+                    ></div>
+                    <p className="text-base text-gray-200 font-apple-text group-hover:text-white transition-colors">
                       {item.originalQuery}
-                    </h3>
-
-                    <div className="flex items-center justify-between text-sm text-gray-400">
-                      <span className="font-apple-text">
-                        {item.entityCount} entities found
-                      </span>
-                      <svg
-                        className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </div>
-                  </motion.button>
-                ))}
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Load More Button */}
-          {isExpanded && hasMore && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="flex justify-center mt-6"
-            >
-              <button
-                onClick={loadMoreHistory}
-                disabled={loading}
-                className="flex items-center space-x-2 px-6 py-2 bg-black/40 backdrop-blur-md border border-white/20 rounded-lg text-gray-300 hover:text-white hover:border-brand-cyan/50 transition-all duration-300 disabled:opacity-50 font-apple-text"
-              >
-                {loading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-brand-cyan"></div>
-                    <span>Loading...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Load More</span>
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-4 text-sm">
+                    <span className="text-gray-500 font-apple-text">
+                      {item.entityCount} entities
+                    </span>
+                    <span className="w-24 text-right text-gray-500 font-apple-text">
+                      {formatDate(item.createdAt)}
+                    </span>
                     <svg
-                      className="w-4 h-4"
+                      className="w-4 h-4 text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -315,41 +218,25 @@ export const SearchHistory: React.FC<SearchHistoryProps> = ({
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
+                        d="M9 5l7 7-7 7"
                       />
                     </svg>
-                  </>
-                )}
-              </button>
-            </motion.div>
-          )}
-        </div>
+                  </div>
+                </motion.button>
+              ))}
+          </motion.div>
+        </AnimatePresence>
       )}
 
-      {/* Empty State */}
-      {historyData && historyData.results.length === 0 && (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-500/20 flex items-center justify-center">
-            <svg
-              className="w-8 h-8 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </div>
-          <h3 className="text-lg font-medium text-gray-300 mb-2 font-apple-text">
-            No Search History
-          </h3>
-          <p className="text-gray-400 font-apple-text">
-            Your search queries will appear here once you start exploring.
-          </p>
+      {isExpanded && hasMore && (
+        <div className="mt-4 text-center">
+          <button
+            onClick={loadMoreHistory}
+            disabled={loading}
+            className="text-sm text-gray-400 hover:text-white disabled:opacity-50 transition-colors"
+          >
+            {loading ? 'Loading...' : 'Load More'}
+          </button>
         </div>
       )}
     </motion.div>
