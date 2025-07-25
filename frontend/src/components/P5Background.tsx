@@ -25,7 +25,17 @@ export const P5Background: React.FC = () => {
     c2: p5Types.Color;
     p5: p5Types;
 
-    constructor(p5: p5Types, x: number, y: number, z: number, a: number, sx: number, sy: number, sz: number, c: p5Types.Color) {
+    constructor(
+      p5: p5Types,
+      x: number,
+      y: number,
+      z: number,
+      a: number,
+      sx: number,
+      sy: number,
+      sz: number,
+      c: p5Types.Color,
+    ) {
       this.p5 = p5;
       this.alpha = a;
       this.box_sizex = sx;
@@ -49,10 +59,18 @@ export const P5Background: React.FC = () => {
       p5.strokeWeight(this.alpha / 200);
       p5.push();
       p5.translate(this.box_locx, this.box_locy, this.box_locz);
-      p5.box(p5.sin(this.box_sizex) * 30, p5.cos(this.box_sizey) * 20, p5.tan(this.box_sizez) * 60);
+      p5.box(
+        p5.sin(this.box_sizex) * 30,
+        p5.cos(this.box_sizey) * 20,
+        p5.tan(this.box_sizez) * 60,
+      );
       p5.rotateY(p5.sin(this.box_sizex) * 30);
       p5.translate(this.box_locx * 2, this.box_locy * 2, this.box_locz * 2);
-      p5.box(p5.cos(this.box_sizex) * 10, p5.sin(this.box_sizey) * 10, p5.atan2(this.box_sizez, 0) * 10);
+      p5.box(
+        p5.cos(this.box_sizex) * 10,
+        p5.sin(this.box_sizey) * 10,
+        p5.atan2(this.box_sizez, 0) * 10,
+      );
       p5.rotateY(p5.cos(this.box_sizex) * 10);
       p5.rotateX(p5.mouseX);
       p5.rotateZ(p5.mouseY);
@@ -62,7 +80,9 @@ export const P5Background: React.FC = () => {
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     p5.pixelDensity(p5.displayDensity());
-    p5.createCanvas(p5.windowWidth, p5.windowHeight, "webgl").parent(canvasParentRef);
+    p5.createCanvas(p5.windowWidth, p5.windowHeight, "webgl").parent(
+      canvasParentRef,
+    );
     p5.colorMode("rgb", 256);
     p5.background(0);
     line_num = 500;
@@ -102,7 +122,17 @@ export const P5Background: React.FC = () => {
       camsetx += (targetx - camsetx) * 0.064;
       camsety += (targety - camsety) * 0.064;
       camsetz = eyesetz - 10.0;
-      p5.camera(eyesetx, eyesety, eyesetz, camsetx, camsety, camsetz, 0.0, 1.0, 0.0);
+      p5.camera(
+        eyesetx,
+        eyesety,
+        eyesetz,
+        camsetx,
+        camsety,
+        camsetz,
+        0.0,
+        1.0,
+        0.0,
+      );
 
       for (let i = 0; i < lines.length - 1; i++) {
         if (i > 0) {
@@ -113,7 +143,19 @@ export const P5Background: React.FC = () => {
 
       for (let i = 0; i < 3; i++) {
         const c = p5.color(p5.random(256), p5.random(256), p5.random(256));
-        boxes.push(new BoxObject(p5, px + p5.random(-600, 600), py + p5.random(-600, 600), pz, 0, p5.random(10, 100), p5.random(10, 100), p5.random(10, 100), c));
+        boxes.push(
+          new BoxObject(
+            p5,
+            px + p5.random(-600, 600),
+            py + p5.random(-600, 600),
+            pz,
+            0,
+            p5.random(10, 100),
+            p5.random(10, 100),
+            p5.random(10, 100),
+            c,
+          ),
+        );
       }
 
       for (let i = 0; i < boxes.length; i++) {
@@ -127,10 +169,10 @@ export const P5Background: React.FC = () => {
       }
     }
   };
-  
+
   const windowResized = (p5: p5Types) => {
     p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
   };
 
   return <Sketch setup={setup} draw={draw} windowResized={windowResized} />;
-}; 
+};

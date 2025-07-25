@@ -39,7 +39,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
                 : "",
             )}
           >
-            {entity.tag === "people" ? (
+            {entity.tag === "person" ? (
               <User className="w-8 h-8" />
             ) : (
               <Building2 className="w-8 h-8" />
@@ -58,7 +58,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
                 typeColor,
               )}
             >
-              {entity.tag === "people"
+              {entity.tag === "person"
                 ? "人物"
                 : entity.tag === "company"
                   ? "公司"

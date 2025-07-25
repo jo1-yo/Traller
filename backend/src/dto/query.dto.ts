@@ -18,7 +18,7 @@ export class EntityLinkDto {
 export class EntityResponseDto {
   id: number;
   name: string;
-  tag: 'people' | 'company';
+  tag: 'person' | 'company';
   avatar_url: string;
   relationship_score: number;
   summary: string;

@@ -47,12 +47,12 @@ export class TavilyService {
   /**
    * Search for avatar image URL based on entity name and tag
    * @param name - Name of the person or company
-   * @param tag - Type of entity ('people' or 'company')
+   * @param tag - Type of entity ('person' or 'company')
    * @returns Promise<string | null> - Avatar URL or null if not found
    */
   async searchAvatar(
     name: string,
-    tag: 'people' | 'company',
+    tag: 'person' | 'company',
   ): Promise<string | null> {
     try {
       if (!this.apiKey) {
@@ -64,7 +64,7 @@ export class TavilyService {
 
       // Construct search query based on entity type
       const searchQuery =
-        tag === 'people'
+        tag === 'person'
           ? `${name} profile photo headshot portrait`
           : `${name} company logo official`;
 
@@ -102,7 +102,7 @@ export class TavilyService {
       // Try fallback search with different query if no images found
       if (images.length === 0) {
         const fallbackQuery =
-          tag === 'people' ? `${name} photo image` : `${name} logo`;
+          tag === 'person' ? `${name} photo image` : `${name} logo`;
 
         const fallbackResponse: AxiosResponse<TavilyResponse> =
           await axios.post(
@@ -201,10 +201,10 @@ export class TavilyService {
   /**
    * Check if image URL appears to be high quality based on entity type
    */
-  private isHighQualityImage(url: string, tag: 'people' | 'company'): boolean {
+  private isHighQualityImage(url: string, tag: 'person' | 'company'): boolean {
     const urlLower = url.toLowerCase();
 
-    if (tag === 'people') {
+    if (tag === 'person') {
       // Prefer professional profile photos
       const goodSources = ['linkedin', 'twitter', 'github', 'gravatar'];
       const badIndicators = ['thumb', 'small', '32x32', '64x64', 'icon'];

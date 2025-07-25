@@ -57,7 +57,7 @@ ${perplexityResponse}
 
 详细要求：
 1. 识别主要人物或公司作为id=0的主角
-2. 识别与主角相关的其他重要实体（人物、公司），分析10-12个最重要的相关实体以构建核心关系网络
+2. 识别与主角相关的其他重要实体（仅限人物、公司），分析10-12个最重要的相关实体以构建核心关系网络
 3. 评估关系紧密度（1-10分）：
    - 9-10分: 直接业务伙伴、创始团队、家庭成员
    - 7-8分: 重要投资人、核心员工、战略合作伙伴
@@ -90,7 +90,7 @@ ${perplexityResponse}
   {
     "id": 0,
     "name": "实体名称",
-    "tag": "people" | "company",
+    "tag": "person" | "company",
     "relationship_score": 数字1-10,
     "summary": "简短摘要，不超过40字",
     "description": "详细描述，Markdown格式，包含引用标记如[1], [2]",
@@ -166,10 +166,7 @@ ${perplexityResponse}
         if (!entity.name) {
           throw new Error(`Entity missing name: ${JSON.stringify(entity)}`);
         }
-        if (
-          !entity.tag ||
-          !['people', 'company', 'event'].includes(entity.tag)
-        ) {
+        if (!entity.tag || !['person', 'company'].includes(entity.tag)) {
           throw new Error(`Entity has invalid tag: ${entity.tag}`);
         }
         if (!entity.summary) {

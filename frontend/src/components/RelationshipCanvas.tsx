@@ -15,14 +15,7 @@ import "reactflow/dist/style.css";
 import { motion } from "framer-motion";
 import dagre from "dagre";
 
-import {
-  Filter,
-  Users,
-  Building,
-  HelpCircle,
-  Sigma,
-  Calendar,
-} from "lucide-react";
+import { Filter, Users, Building, HelpCircle, Sigma } from "lucide-react";
 import type { Entity } from "@/types";
 import { EntityCard } from "./EntityCard";
 import { cn, getRelationshipScoreColor } from "@/lib/utils";
@@ -72,38 +65,39 @@ const getRadialLayoutElements = (nodes: Node[], edges: Edge[]) => {
   }
 
   const radius = Math.max(400, 150 + otherNodes.length * 25);
-  const angleStep = otherNodes.length <= 1 ? 0 : (2 * Math.PI) / otherNodes.length;
+  const angleStep =
+    otherNodes.length <= 1 ? 0 : (2 * Math.PI) / otherNodes.length;
 
   protagonist.position = { x: 0, y: 0 };
   protagonist.targetPosition = Position.Top;
   protagonist.sourcePosition = Position.Bottom;
 
+  const layoutedNodes = [
+    protagonist,
+    ...otherNodes.map((node, i) => {
+      const angle = angleStep * i - Math.PI / 2; // Start from top
+      const x = radius * Math.cos(angle);
+      const y = radius * Math.sin(angle);
 
-  const layoutedNodes = [protagonist, ...otherNodes.map((node, i) => {
-    const angle = angleStep * i - Math.PI / 2; // Start from top
-    const x = radius * Math.cos(angle);
-    const y = radius * Math.sin(angle);
-
-    return {
-      ...node,
-      targetPosition: Position.Top,
-      sourcePosition: Position.Bottom,
-      position: { x, y },
-    };
-  })];
+      return {
+        ...node,
+        targetPosition: Position.Top,
+        sourcePosition: Position.Bottom,
+        position: { x, y },
+      };
+    }),
+  ];
 
   // We are using radial layout, so we don't need to layout edges with dagre
   // But we still need to return them.
-  const layoutedEdges = edges.map(edge => ({
+  const layoutedEdges = edges.map((edge) => ({
     ...edge,
-    type: 'smoothstep',
+    type: "smoothstep",
     animated: true,
   }));
 
-
   return { nodes: layoutedNodes, edges: layoutedEdges };
 };
-
 
 const getLayoutedElements = (
   nodes: Node[],
@@ -145,17 +139,18 @@ export const RelationshipCanvas: React.FC<RelationshipCanvasProps> = ({
   onEntityClick,
   className,
 }) => {
-  const [filter, setFilter] = useState<"all" | "people" | "company" | "event">(
-    "all",
-  );
+  const [filter, setFilter] = useState<"all" | "person" | "company">("all");
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   const filteredEntities = useMemo(() => {
     if (filter === "all") return entities;
-    return entities.filter(
-      (entity) => entity.tag === filter || entity.id === 0, // Always include protagonist
-    );
+    const protagonist = entities.find((e) => e.id === 0);
+    const others = entities.filter((e) => e.id !== 0 && e.tag === filter);
+    if (protagonist) {
+      return [protagonist, ...others];
+    }
+    return others;
   }, [entities, filter]);
 
   const onLayout = useCallback(() => {
@@ -182,9 +177,9 @@ export const RelationshipCanvas: React.FC<RelationshipCanvasProps> = ({
 
         // Add variety to connection lines
         const lineVariations = [
-          { type: 'smoothstep', animated: true },
-          { type: 'straight', animated: false },
-          { type: 'step', animated: true },
+          { type: "smoothstep", animated: true },
+          { type: "straight", animated: false },
+          { type: "step", animated: true },
         ];
 
         const variation = lineVariations[index % lineVariations.length];
@@ -208,20 +203,18 @@ export const RelationshipCanvas: React.FC<RelationshipCanvasProps> = ({
             type: MarkerType.ArrowClosed,
             color: finalColor,
             width: 20,
-            height: 20
+            height: 20,
           },
           style: {
             stroke: finalColor,
             strokeWidth: strokeWidth,
-            strokeDasharray: index % 4 === 3 ? '5,5' : undefined, // Add dashed lines occasionally
+            strokeDasharray: index % 4 === 3 ? "5,5" : undefined, // Add dashed lines occasionally
           },
         };
       });
 
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getRadialLayoutElements(
-      initialNodes,
-      initialEdges,
-    );
+    const { nodes: layoutedNodes, edges: layoutedEdges } =
+      getRadialLayoutElements(initialNodes, initialEdges);
     setNodes(layoutedNodes);
     setEdges(layoutedEdges);
   }, [filteredEntities, onEntityClick, setNodes, setEdges]);
@@ -288,19 +281,18 @@ export const RelationshipCanvas: React.FC<RelationshipCanvasProps> = ({
 
 const FilterControl: React.FC<{
   filter: string;
-  setFilter: (f: "all" | "people" | "company" | "event") => void;
+  setFilter: (f: "all" | "person" | "company") => void;
 }> = ({ filter, setFilter }) => (
   <div className="bg-black/40 backdrop-blur-md rounded-lg shadow-lg border border-white/20 p-2 flex items-center space-x-1">
     <Filter className="w-5 h-5 text-gray-300 mx-1" />
     {[
       { key: "all", label: "All" },
-      { key: "people", label: "People", icon: Users },
+      { key: "person", label: "Person", icon: Users },
       { key: "company", label: "Companies", icon: Building },
-      { key: "event", label: "Events", icon: Calendar },
     ].map(({ key, label, icon: Icon }) => (
       <button
         key={key}
-        onClick={() => setFilter(key as any)}
+        onClick={() => setFilter(key as "all" | "person" | "company")}
         className={cn(
           "px-2 md:px-3 py-1 md:py-1.5 rounded-md text-xs md:text-sm font-light transition-all duration-200 flex items-center space-x-1 md:space-x-1.5",
           filter === key

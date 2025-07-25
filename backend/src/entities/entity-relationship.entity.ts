@@ -20,7 +20,7 @@ export class EntityRelationship {
   name: string;
 
   @Prop({ required: true, maxlength: 50 })
-  tag: string; // 'people' | 'company'
+  tag: string; // 'person' | 'company'
 
   @Prop()
   avatarUrl?: string;

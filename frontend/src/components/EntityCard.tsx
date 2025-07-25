@@ -17,7 +17,11 @@ export const EntityCard: React.FC<EntityCardProps> = ({
 }) => {
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: "easeOut" },
+    },
   };
 
   return (
@@ -46,7 +50,7 @@ export const EntityCard: React.FC<EntityCardProps> = ({
             : "radial-gradient(circle at 50% 0%, hsl(var(--secondary) / 0.1), transparent 70%)",
         }}
       />
-      
+
       {isProtagonist && (
         <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-full z-10">
           PROTAGONIST
@@ -92,7 +96,7 @@ export const EntityCard: React.FC<EntityCardProps> = ({
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/40 to-purple-600/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md" />
         </button>
       </div>
-      
+
       {entity.links && entity.links.length > 0 && (
         <a
           href={entity.links[0].url}

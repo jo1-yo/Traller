@@ -3,7 +3,7 @@ export interface EntityLink {
   url: string;
 }
 
-export type EntityTag = "people" | "company" | "event";
+export type EntityTag = "person" | "company";
 
 export interface Entity {
   id: number;
