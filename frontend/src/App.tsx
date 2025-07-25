@@ -5,7 +5,6 @@ import { EntityDetailModal } from "./components/EntityDetailModal";
 import { SearchHistory } from "./components/SearchHistory";
 import { queryAPI } from "./services/api";
 import type { Entity, QueryResponse, ApiError } from "./types";
-import { cn } from "./lib/utils";
 import { Toaster } from "sonner";
 import { P5Background } from "./components/P5Background";
 

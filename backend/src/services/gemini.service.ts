@@ -91,7 +91,6 @@ ${perplexityResponse}
     "id": 0,
     "name": "实体名称",
     "tag": "people" | "company",
-    "avatar_url": "头像或Logo链接，没有则为空字符串",
     "relationship_score": 数字1-10,
     "summary": "简短摘要，不超过40字",
     "description": "详细描述，Markdown格式，包含引用标记如[1], [2]",

@@ -76,7 +76,7 @@ export class QueryService {
   }
 
   /**
-   * Enhance entities with avatars using Tavily API for missing or empty avatar URLs
+   * Enhance entities with avatars using Tavily API for all entities
    */
   private async enhanceEntitiesWithAvatars(
     entities: EntityResponseDto[],
@@ -86,35 +86,37 @@ export class QueryService {
     for (let i = 0; i < enhancedEntities.length; i++) {
       const entity = enhancedEntities[i];
 
-      // Check if avatar is missing or empty
-      if (!entity.avatar_url || entity.avatar_url.trim() === '') {
-        try {
-          this.logger.log(
-            `Searching avatar for entity: ${entity.name} (${entity.tag})`,
-          );
+      try {
+        this.logger.log(
+          `Searching avatar for entity: ${entity.name} (${entity.tag})`,
+        );
 
-          // Search for avatar using Tavily API
-          const avatarUrl = await this.tavilyService.searchAvatar(
-            entity.name,
-            entity.tag,
-          );
+        // Always search for avatar using Tavily API
+        const avatarUrl = await this.tavilyService.searchAvatar(
+          entity.name,
+          entity.tag,
+        );
 
-          if (avatarUrl) {
-            enhancedEntities[i] = {
-              ...entity,
-              avatar_url: avatarUrl,
-            };
-            this.logger.log(`Updated avatar for ${entity.name}: ${avatarUrl}`);
-          } else {
-            this.logger.log(`No avatar found for ${entity.name}`);
-          }
-        } catch (error) {
-          this.logger.error(
-            `Error enhancing avatar for ${entity.name}:`,
-            (error as Error).message,
-          );
-          // Continue with original entity if avatar search fails
+        enhancedEntities[i] = {
+          ...entity,
+          avatar_url: avatarUrl || '', // Use empty string if no avatar found
+        };
+
+        if (avatarUrl) {
+          this.logger.log(`Found avatar for ${entity.name}: ${avatarUrl}`);
+        } else {
+          this.logger.log(`No avatar found for ${entity.name}`);
         }
+      } catch (error) {
+        this.logger.error(
+          `Error enhancing avatar for ${entity.name}:`,
+          (error as Error).message,
+        );
+        // Set empty avatar_url if search fails
+        enhancedEntities[i] = {
+          ...entity,
+          avatar_url: '',
+        };
       }
     }
 
