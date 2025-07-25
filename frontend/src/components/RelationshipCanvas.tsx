@@ -14,6 +14,7 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import { motion } from "framer-motion";
 import dagre from "dagre";
+
 import {
   Filter,
   Users,
@@ -57,8 +58,53 @@ const CustomNode = ({
 };
 
 const nodeTypes = { entityCard: CustomNode };
-const nodeWidth = 256;
-const nodeHeight = 144; // Adjusted for new card height
+const nodeWidth = 320; // Corresponds to max-w-xs, adjust if needed
+const nodeHeight = 480; // Approximate height, might need adjustment
+
+const getRadialLayoutElements = (nodes: Node[], edges: Edge[]) => {
+  if (nodes.length === 0) return { nodes, edges };
+
+  const protagonist = nodes.find((node) => node.data.isProtagonist);
+  const otherNodes = nodes.filter((node) => !node.data.isProtagonist);
+
+  if (!protagonist) {
+    // Fallback if no protagonist is found (e.g., return grid layout)
+    return getLayoutedElements(nodes, edges);
+  }
+
+  const radius = Math.max(250, 100 + otherNodes.length * 20);
+  const angleStep = (2 * Math.PI) / otherNodes.length;
+
+  protagonist.position = { x: 0, y: 0 };
+  protagonist.targetPosition = Position.Top;
+  protagonist.sourcePosition = Position.Bottom;
+
+
+  const layoutedNodes = [protagonist, ...otherNodes.map((node, i) => {
+    const angle = angleStep * i - Math.PI / 2; // Start from top
+    const x = radius * Math.cos(angle);
+    const y = radius * Math.sin(angle);
+
+    return {
+      ...node,
+      targetPosition: Position.Top,
+      sourcePosition: Position.Bottom,
+      position: { x, y },
+    };
+  })];
+
+  // We are using radial layout, so we don't need to layout edges with dagre
+  // But we still need to return them.
+  const layoutedEdges = edges.map(edge => ({
+    ...edge,
+    type: 'smoothstep',
+    animated: true,
+  }));
+
+
+  return { nodes: layoutedNodes, edges: layoutedEdges };
+};
+
 
 const getLayoutedElements = (
   nodes: Node[],
@@ -83,12 +129,12 @@ const getLayoutedElements = (
     const nodeWithPosition = dagreGraph.node(node.id);
     return {
       ...node,
-      targetPosition: Position.Top,
-      sourcePosition: Position.Bottom,
       position: {
         x: nodeWithPosition.x - nodeWidth / 2,
         y: nodeWithPosition.y - nodeHeight / 2,
       },
+      targetPosition: Position.Top,
+      sourcePosition: Position.Bottom,
     };
   });
 
@@ -123,27 +169,57 @@ export const RelationshipCanvas: React.FC<RelationshipCanvasProps> = ({
         isProtagonist: entity.id === 0,
       },
       position: { x: 0, y: 0 },
+      style: {
+        width: nodeWidth,
+        height: 'auto', // Allow height to be determined by content
+      }
     }));
 
     const initialEdges: Edge[] = filteredEntities
       .filter((entity) => entity.id !== 0)
-      .map((entity) => ({
-        id: `edge-0-${entity.id}`,
-        source: "entity-0",
-        target: `entity-${entity.id}`,
-        type: "smoothstep",
-        animated: true,
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-          color: getRelationshipScoreColor(entity.relationship_score),
-        },
-        style: {
-          stroke: getRelationshipScoreColor(entity.relationship_score),
-          strokeWidth: 1 + (entity.relationship_score / 10) * 3,
-        },
-      }));
+      .map((entity, index) => {
+        const baseColor = getRelationshipScoreColor(entity.relationship_score);
+        const strokeWidth = 2 + (entity.relationship_score / 10) * 4;
 
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+        // Add variety to connection lines
+        const lineVariations = [
+          { type: 'smoothstep', animated: true },
+          { type: 'straight', animated: false },
+          { type: 'step', animated: true },
+        ];
+
+        const variation = lineVariations[index % lineVariations.length];
+
+        // Add subtle randomization to colors while maintaining readability
+        const colorVariations = [
+          baseColor,
+          `${baseColor}CC`, // Add transparency
+          baseColor,
+        ];
+
+        const finalColor = colorVariations[index % colorVariations.length];
+
+        return {
+          id: `edge-0-${entity.id}`,
+          source: "entity-0",
+          target: `entity-${entity.id}`,
+          type: variation.type,
+          animated: variation.animated,
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            color: finalColor,
+            width: 20,
+            height: 20
+          },
+          style: {
+            stroke: finalColor,
+            strokeWidth: strokeWidth,
+            strokeDasharray: index % 4 === 3 ? '5,5' : undefined, // Add dashed lines occasionally
+          },
+        };
+      });
+
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getRadialLayoutElements(
       initialNodes,
       initialEdges,
     );

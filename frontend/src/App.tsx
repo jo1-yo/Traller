@@ -106,16 +106,17 @@ function App() {
             {/* 顶部导航栏 */}
             <div className="bg-black/40 backdrop-blur-md border-b border-white/20 px-4 md:px-6 py-3 flex items-center justify-between">
               <div className="flex items-center space-x-2 md:space-x-4">
-                <img
-                  src="/images/logos/logo Traller(1).png"
-                  alt="Traller Logo"
-                  className="w-6 h-6 md:w-8 md:h-8"
-                />
-                <img
-                  src="/images/logos/logo title main-64.png"
-                  alt="Traller"
-                  className="h-5 md:h-6 w-auto object-contain"
-                />
+                <button
+                  onClick={handleNewQuery}
+                  className="focus:outline-none transition-opacity hover:opacity-80"
+                  aria-label="Go to homepage"
+                >
+                  <img
+                    src="/images/logos/logo Traller(1).png"
+                    alt="Traller Logo"
+                    className="w-6 h-6 md:w-8 md:h-8"
+                  />
+                </button>
                 <div className="hidden md:block text-sm text-gray-300 font-apple-text">
                   Query:{" "}
                   <span className="font-medium text-white">
