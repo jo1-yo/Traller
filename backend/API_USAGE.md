@@ -9,7 +9,8 @@
 1. **结构化数据处理**: 将非结构化文本转换为统一格式的JSON数据
 2. **关系识别**: 识别实体间的关系类型和强度评分
 3. **证据提取**: 提取支持关系的原文片段和链接
-4. **数据持久化**: 使用SQLite数据库存储查询结果
+4. **头像增强**: 使用Tavily API自动搜索和填充缺失的头像链接
+5. **数据持久化**: 使用SQLite数据库存储查询结果
 
 ## API 端点
 
@@ -94,6 +95,9 @@ PERPLEXITY_API_URL=https://api.perplexity.ai
 KIMI_API_KEY=your_kimi_api_key_here
 KIMI_API_URL=https://api.moonshot.cn/v1
 
+# Tavily API 配置 (用于头像搜索)
+TAVILY_API_KEY=your_tavily_api_key_here
+
 # 服务器配置
 PORT=3000
 NODE_ENV=development
@@ -134,6 +138,30 @@ pnpm run start:prod
 
 1. **query_results**: 存储查询结果的主要信息
 2. **entity_relationships**: 存储实体关系的详细信息
+
+## 头像增强功能
+
+系统会自动检测实体中缺失的头像链接，并使用Tavily API搜索合适的头像：
+
+### 工作流程
+1. 在Kimi API结构化数据后，系统检查每个实体的`avatar_url`字段
+2. 如果`avatar_url`为空或null，系统会调用Tavily API搜索头像
+3. 根据实体类型优化搜索策略：
+   - **人物 (people)**: 搜索 "姓名 profile photo headshot portrait"
+   - **公司 (company)**: 搜索 "公司名 company logo official"
+4. 系统会验证搜索结果的图片质量和相关性
+5. 将找到的头像URL更新到实体数据中
+
+### 配置要求
+需要在`.env`文件中配置Tavily API密钥：
+```env
+TAVILY_API_KEY=your_tavily_api_key_here
+```
+
+### 图片质量筛选
+- 优先选择来自LinkedIn、Twitter、GitHub等专业平台的图片
+- 过滤掉低质量的缩略图和图标
+- 根据实体类型选择最合适的图片类型
 
 ## 错误处理
 

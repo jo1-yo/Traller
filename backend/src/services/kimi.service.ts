@@ -112,20 +112,22 @@ ${perplexityResponse}
 
       // 处理流式响应
       let fullContent = '';
-      
+
       return new Promise<EntityResponseDto[]>((resolve, reject) => {
         response.data.on('data', (chunk: Buffer) => {
           const lines = chunk.toString().split('\n');
-          
+
           for (const line of lines) {
             if (line.startsWith('data: ')) {
               const data = line.slice(6).trim();
-              
+
               if (data === '[DONE]') {
                 // 流结束，处理完整内容
                 try {
                   // 清理可能的markdown代码块标记
-                  const cleanContent = fullContent.replace(/```json\n?|```\n?/g, '').trim();
+                  const cleanContent = fullContent
+                    .replace(/```json\n?|```\n?/g, '')
+                    .trim();
                   const structuredData: unknown = JSON.parse(cleanContent);
 
                   // 验证数据格式
@@ -137,17 +139,24 @@ ${perplexityResponse}
                 } catch (parseError) {
                   this.logger.error(
                     'Failed to parse Kimi response as JSON:',
-                    parseError instanceof Error ? parseError.message : 'Unknown error',
+                    parseError instanceof Error
+                      ? parseError.message
+                      : 'Unknown error',
                   );
                   this.logger.error('Raw content:', fullContent);
                   reject(new Error('Invalid JSON response from Kimi API'));
                 }
                 return;
               }
-              
+
               try {
                 const parsed = JSON.parse(data);
-                if (parsed.choices && parsed.choices[0] && parsed.choices[0].delta && parsed.choices[0].delta.content) {
+                if (
+                  parsed.choices &&
+                  parsed.choices[0] &&
+                  parsed.choices[0].delta &&
+                  parsed.choices[0].delta.content
+                ) {
                   fullContent += parsed.choices[0].delta.content;
                 }
               } catch (e) {
@@ -156,12 +165,14 @@ ${perplexityResponse}
             }
           }
         });
-        
+
         response.data.on('end', () => {
           // 如果没有收到 [DONE] 标记，尝试解析已收集的内容
           if (fullContent) {
             try {
-              const cleanContent = fullContent.replace(/```json\n?|```\n?/g, '').trim();
+              const cleanContent = fullContent
+                .replace(/```json\n?|```\n?/g, '')
+                .trim();
               const structuredData: unknown = JSON.parse(cleanContent);
 
               if (Array.isArray(structuredData)) {
@@ -172,7 +183,9 @@ ${perplexityResponse}
             } catch (parseError) {
               this.logger.error(
                 'Failed to parse Kimi response as JSON:',
-                parseError instanceof Error ? parseError.message : 'Unknown error',
+                parseError instanceof Error
+                  ? parseError.message
+                  : 'Unknown error',
               );
               this.logger.error('Raw content:', fullContent);
               reject(new Error('Invalid JSON response from Kimi API'));
@@ -181,7 +194,7 @@ ${perplexityResponse}
             reject(new Error('No content received from Kimi API'));
           }
         });
-        
+
         response.data.on('error', (error: Error) => {
           this.logger.error('Stream error:', error.message);
           reject(new Error(`Stream error: ${error.message}`));

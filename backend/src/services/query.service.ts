@@ -11,6 +11,7 @@ import {
 } from '../entities/entity-relationship.entity';
 import { PerplexityService } from './perplexity.service';
 import { KimiService } from './kimi.service';
+import { TavilyService } from './tavily.service';
 import {
   QueryRequestDto,
   QueryResponseDto,
@@ -28,11 +29,11 @@ export class QueryService {
     private entityRelationshipModel: Model<EntityRelationshipDocument>,
     private perplexityService: PerplexityService,
     private kimiService: KimiService,
+    private tavilyService: TavilyService,
   ) {}
 
   async processQuery(queryRequest: QueryRequestDto): Promise<QueryResponseDto> {
-    let savedQueryResult: any = null;
-    
+    let savedQueryResult: QueryResultDocument | null = null;
     try {
       this.logger.log(`Processing query: ${queryRequest.query}`);
 
@@ -49,13 +50,18 @@ export class QueryService {
         queryRequest.query,
       );
 
+      // Step 2.5: Enhance missing avatars using Tavily API
+      this.logger.log('Enhancing missing avatars with Tavily API...');
+      const enhancedEntities =
+        await this.enhanceEntitiesWithAvatars(structuredEntities);
+
       // Step 3: Save query result to database
       const queryResult = new this.queryResultModel({
         originalQuery: queryRequest.query,
         queryType: queryRequest.queryType || 'other',
-        structuredData: JSON.stringify(structuredEntities),
+        structuredData: JSON.stringify(enhancedEntities),
         perplexityResponse: perplexityResponse,
-        kimiResponse: JSON.stringify(structuredEntities),
+        kimiResponse: JSON.stringify(enhancedEntities),
       });
 
       savedQueryResult = await queryResult.save();
@@ -64,8 +70,9 @@ export class QueryService {
       );
 
       // Step 4: Save entity relationship data
-      const entityRelationships = structuredEntities.map((entity) => ({
-        queryResultId: savedQueryResult._id,
+      // Ensure savedQueryResult is not null before accessing its _id
+      const entityRelationships = enhancedEntities.map((entity) => ({
+        queryResultId: savedQueryResult ? savedQueryResult._id : null, // Defensive: handle possible null
         entityId: entity.id,
         name: entity.name,
         tag: entity.tag,
@@ -86,24 +93,29 @@ export class QueryService {
         id: String(savedQueryResult._id),
         originalQuery: savedQueryResult.originalQuery,
         queryType: savedQueryResult.queryType,
-        entities: structuredEntities,
+        entities: enhancedEntities,
         createdAt: new Date(savedQueryResult.createdAt || Date.now()),
       };
     } catch (error) {
       this.logger.error('Error processing query:', (error as Error).message);
-      
+
       // 如果保存 QueryResult 成功但后续步骤失败，需要清理已保存的数据
       if (savedQueryResult && savedQueryResult._id) {
         try {
           this.logger.log('Cleaning up saved query result due to error...');
           await this.queryResultModel.findByIdAndDelete(savedQueryResult._id);
-          await this.entityRelationshipModel.deleteMany({ queryResultId: savedQueryResult._id });
+          await this.entityRelationshipModel.deleteMany({
+            queryResultId: savedQueryResult._id,
+          });
           this.logger.log('Cleanup completed');
         } catch (cleanupError) {
-          this.logger.error('Error during cleanup:', (cleanupError as Error).message);
+          this.logger.error(
+            'Error during cleanup:',
+            (cleanupError as Error).message,
+          );
         }
       }
-      
+
       throw new Error(`Query processing failed: ${(error as Error).message}`);
     }
   }
@@ -182,5 +194,51 @@ export class QueryService {
         `Failed to delete query result: ${(error as Error).message}`,
       );
     }
+  }
+
+  /**
+   * Enhance entities with avatars using Tavily API for missing or empty avatar URLs
+   */
+  private async enhanceEntitiesWithAvatars(
+    entities: EntityResponseDto[],
+  ): Promise<EntityResponseDto[]> {
+    const enhancedEntities = [...entities];
+
+    for (let i = 0; i < enhancedEntities.length; i++) {
+      const entity = enhancedEntities[i];
+
+      // Check if avatar is missing or empty
+      if (!entity.avatar_url || entity.avatar_url.trim() === '') {
+        try {
+          this.logger.log(
+            `Searching avatar for entity: ${entity.name} (${entity.tag})`,
+          );
+
+          // Search for avatar using Tavily API
+          const avatarUrl = await this.tavilyService.searchAvatar(
+            entity.name,
+            entity.tag,
+          );
+
+          if (avatarUrl) {
+            enhancedEntities[i] = {
+              ...entity,
+              avatar_url: avatarUrl,
+            };
+            this.logger.log(`Updated avatar for ${entity.name}: ${avatarUrl}`);
+          } else {
+            this.logger.log(`No avatar found for ${entity.name}`);
+          }
+        } catch (error) {
+          this.logger.error(
+            `Error enhancing avatar for ${entity.name}:`,
+            (error as Error).message,
+          );
+          // Continue with original entity if avatar search fails
+        }
+      }
+    }
+
+    return enhancedEntities;
   }
 }

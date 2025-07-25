@@ -7,6 +7,7 @@ import { QueryController } from './controllers/query.controller';
 import { QueryService } from './services/query.service';
 import { PerplexityService } from './services/perplexity.service';
 import { KimiService } from './services/kimi.service';
+import { TavilyService } from './services/tavily.service';
 import { QueryResult, QueryResultSchema } from './entities/query-result.entity';
 import {
   EntityRelationship,
@@ -31,6 +32,12 @@ import { getDatabaseConfig } from './config/database.config';
     ]),
   ],
   controllers: [AppController, QueryController],
-  providers: [AppService, QueryService, PerplexityService, KimiService],
+  providers: [
+    AppService,
+    QueryService,
+    PerplexityService,
+    KimiService,
+    TavilyService,
+  ],
 })
 export class AppModule {}

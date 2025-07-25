@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { Server } from 'http';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -25,12 +26,16 @@ async function bootstrap() {
   );
 
   const port = process.env.PORT ?? 3000;
-  
+
   // 设置服务器超时时间为5分钟
-  const server = await app.listen(port);
+  const server = (await app.listen(port)) as Server;
   server.setTimeout(300000); // 5分钟超时
-  
+
   console.log(`Application is running on: http://localhost:${port}`);
   console.log('Server timeout set to 5 minutes for long-running API calls');
 }
-bootstrap();
+
+bootstrap().catch((err) => {
+  console.error('Failed to bootstrap the application', err);
+  process.exit(1);
+});
