@@ -3,7 +3,7 @@ export interface EntityLink {
   url: string;
 }
 
-export type EntityTag = 'people' | 'company' | 'event';
+export type EntityTag = "people" | "company" | "event";
 
 export interface Entity {
   id: number;
@@ -18,7 +18,7 @@ export interface Entity {
 
 export interface QueryRequest {
   query: string;
-  queryType?: 'link' | 'person' | 'other';
+  queryType?: "link" | "person" | "other";
 }
 
 export interface QueryResponse {
@@ -53,4 +53,4 @@ export interface ApiError {
   status: number;
   error: string;
   message: string;
-} 
+}

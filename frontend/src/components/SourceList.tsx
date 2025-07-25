@@ -1,9 +1,9 @@
-import React from 'react';
-import { ExternalLink } from 'lucide-react';
-import type { Entity } from '@/types';
+import React from "react";
+import { ExternalLink } from "lucide-react";
+import type { Entity } from "@/types";
 
 interface SourceListProps {
-  links: Entity['links'];
+  links: Entity["links"];
 }
 
 export const SourceList: React.FC<SourceListProps> = ({ links }) => {
@@ -32,4 +32,4 @@ export const SourceList: React.FC<SourceListProps> = ({ links }) => {
       </div>
     </div>
   );
-}; 
+};

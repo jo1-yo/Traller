@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { QueryInterface } from './components/QueryInterface';
-import { RelationshipCanvas } from './components/RelationshipCanvas';
-import { EntityDetailModal } from './components/EntityDetailModal';
-import { SearchHistory } from './components/SearchHistory';
-import { queryAPI } from './services/api';
-import type { Entity, QueryResponse, ApiError } from './types';
-import { cn } from './lib/utils';
+import React, { useState } from "react";
+import { QueryInterface } from "./components/QueryInterface";
+import { RelationshipCanvas } from "./components/RelationshipCanvas";
+import { EntityDetailModal } from "./components/EntityDetailModal";
+import { SearchHistory } from "./components/SearchHistory";
+import { queryAPI } from "./services/api";
+import type { Entity, QueryResponse, ApiError } from "./types";
+import { cn } from "./lib/utils";
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,14 +21,14 @@ function App() {
     try {
       const result = await queryAPI.processQuery({
         query,
-        queryType: 'other', // 可以根据查询内容自动判断
+        queryType: "other", // 可以根据查询内容自动判断
       });
-      
+
       setQueryResult(result);
     } catch (err) {
       const apiError = err as ApiError;
-      setError(apiError.message || '查询失败，请重试');
-      console.error('Query error:', err);
+      setError(apiError.message || "查询失败，请重试");
+      console.error("Query error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -57,8 +57,8 @@ function App() {
       setQueryResult(result);
     } catch (err) {
       const apiError = err as ApiError;
-      setError(apiError.message || 'Failed to load historical query');
-      console.error('History load error:', err);
+      setError(apiError.message || "Failed to load historical query");
+      console.error("History load error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -87,15 +87,15 @@ function App() {
           <div className="container mx-auto">
             {/* Main query interface - centered */}
             <div className="flex items-center justify-center min-h-screen">
-              <QueryInterface 
-                onSubmit={handleQuery} 
-                isLoading={isLoading} 
+              <QueryInterface
+                onSubmit={handleQuery}
+                isLoading={isLoading}
                 error={error}
               />
             </div>
-            
+
             {/* Search history - appears below when scrolling */}
-            <SearchHistory 
+            <SearchHistory
               onSelectHistory={handleSelectHistory}
               className="px-4 md:px-6"
             />
@@ -106,10 +106,21 @@ function App() {
             {/* 顶部导航栏 */}
             <div className="bg-black/40 backdrop-blur-md border-b border-white/20 px-4 md:px-6 py-3 flex items-center justify-between">
               <div className="flex items-center space-x-2 md:space-x-4">
-                <img src="/images/logos/logo Traller(1).png" alt="Traller Logo" className="w-6 h-6 md:w-8 md:h-8" />
-                <img src="/images/logos/logo title main-64.png" alt="Traller" className="h-5 md:h-6 w-auto object-contain" />
+                <img
+                  src="/images/logos/logo Traller(1).png"
+                  alt="Traller Logo"
+                  className="w-6 h-6 md:w-8 md:h-8"
+                />
+                <img
+                  src="/images/logos/logo title main-64.png"
+                  alt="Traller"
+                  className="h-5 md:h-6 w-auto object-contain"
+                />
                 <div className="hidden md:block text-sm text-gray-300 font-apple-text">
-                  Query: <span className="font-medium text-white">{queryResult.originalQuery}</span>
+                  Query:{" "}
+                  <span className="font-medium text-white">
+                    {queryResult.originalQuery}
+                  </span>
                 </div>
               </div>
               <div className="flex items-center space-x-2 md:space-x-3">
@@ -146,4 +157,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;

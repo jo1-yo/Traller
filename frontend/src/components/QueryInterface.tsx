@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Wand2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Loader2, Wand2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface QueryInterfaceProps {
   onSubmit: (query: string) => void;
@@ -16,7 +16,7 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
   error,
   className,
 }) => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,28 +26,32 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
   };
 
   const examples = [
-    'Elon Musk',
-    'OpenAI',
-    'Tesla Inc',
-    'Mark Zuckerberg',
-    'Google DeepMind',
+    "Elon Musk",
+    "OpenAI",
+    "Tesla Inc",
+    "Mark Zuckerberg",
+    "Google DeepMind",
   ];
 
   const containerVariants = {
     initial: { opacity: 0 },
-    animate: { 
+    animate: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
+      transition: { staggerChildren: 0.1 },
     },
   };
 
   const itemVariants = {
     initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100 } },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 100 },
+    },
   };
 
   return (
-    <div className={cn('w-full max-w-4xl mx-auto px-4 py-8', className)}>
+    <div className={cn("w-full max-w-4xl mx-auto px-4 py-8", className)}>
       {/* Logo in top-left corner */}
       <motion.div
         variants={itemVariants}
@@ -55,7 +59,11 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
         animate="animate"
         className="absolute top-8 left-8 z-20"
       >
-        <img src="/images/logos/logo Traller(1).png" alt="Traller Logo" className="w-12 h-12 md:w-16 md:h-16" />
+        <img
+          src="/images/logos/logo Traller(1).png"
+          alt="Traller Logo"
+          className="w-12 h-12 md:w-16 md:h-16"
+        />
       </motion.div>
 
       <motion.div
@@ -77,12 +85,19 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
           </motion.div>
         </motion.div>
 
-        <motion.p variants={itemVariants} className="text-lg md:text-xl font-apple-display text-gray-200 mb-4 px-4">
+        <motion.p
+          variants={itemVariants}
+          className="text-lg md:text-xl font-apple-display text-gray-200 mb-4 px-4"
+        >
           AI-Powered Intelligence & Relationship Network Explorer
         </motion.p>
 
-        <motion.p variants={itemVariants} className="text-sm md:text-base font-apple-text text-gray-400 mb-12 md:mb-16 px-4">
-          Discover deep insights and complex relationships with advanced AI analysis
+        <motion.p
+          variants={itemVariants}
+          className="text-sm md:text-base font-apple-text text-gray-400 mb-12 md:mb-16 px-4"
+        >
+          Discover deep insights and complex relationships with advanced AI
+          analysis
         </motion.p>
       </motion.div>
 
@@ -102,7 +117,7 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
               className="input"
               disabled={isLoading}
             />
-            
+
             <button
               type="submit"
               disabled={isLoading || !query.trim()}
@@ -110,7 +125,7 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
             >
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={isLoading ? 'loading' : 'ready'}
+                  key={isLoading ? "loading" : "ready"}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
@@ -143,7 +158,9 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
         className="mt-6"
       >
         <div className="flex flex-wrap justify-center items-center gap-2 md:gap-3 px-4">
-          <span className="text-sm text-gray-400 font-light mb-2 w-full md:w-auto md:mb-0">Examples:</span>
+          <span className="text-sm text-gray-400 font-light mb-2 w-full md:w-auto md:mb-0">
+            Examples:
+          </span>
           {examples.map((example) => (
             <button
               key={example}
@@ -171,14 +188,20 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
                   <motion.div
                     key={i}
                     className="w-1.5 h-1.5 bg-brand-cyan rounded-full"
-                    animate={{ 
+                    animate={{
                       y: [0, -4, 0],
-                      transition: { duration: 1, repeat: Infinity, delay: i * 0.15 }
+                      transition: {
+                        duration: 1,
+                        repeat: Infinity,
+                        delay: i * 0.15,
+                      },
                     }}
                   />
                 ))}
               </div>
-              <span className="text-sm font-light">AI is performing deep analysis, please wait... (1-2 minutes)</span>
+              <span className="text-sm font-light">
+                AI is performing deep analysis, please wait... (1-2 minutes)
+              </span>
             </motion.div>
           )}
           {error && (
@@ -195,4 +218,4 @@ export const QueryInterface: React.FC<QueryInterfaceProps> = ({
       </div>
     </div>
   );
-}; 
+};

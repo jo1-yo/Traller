@@ -1,11 +1,15 @@
-import axios from 'axios';
-import type { QueryRequest, QueryResponse, SearchHistoryResponse } from '@/types';
+import axios from "axios";
+import type {
+  QueryRequest,
+  QueryResponse,
+  SearchHistoryResponse,
+} from "@/types";
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: "http://localhost:3000",
   timeout: 240000, // 4分钟超时，为后端处理留出充足时间
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -18,10 +22,10 @@ api.interceptors.response.use(
     }
     throw {
       status: 500,
-      error: 'Network Error',
-      message: error.message || 'An unexpected error occurred',
+      error: "Network Error",
+      message: error.message || "An unexpected error occurred",
     };
-  }
+  },
 );
 
 export const queryAPI = {
@@ -29,16 +33,19 @@ export const queryAPI = {
    * Submit query request
    */
   async processQuery(request: QueryRequest): Promise<QueryResponse> {
-    const response = await api.post<QueryResponse>('/api/query', request);
+    const response = await api.post<QueryResponse>("/api/query", request);
     return response.data;
   },
 
   /**
    * Get search history with pagination
    */
-  async getSearchHistory(page: number = 1, limit: number = 10): Promise<SearchHistoryResponse> {
+  async getSearchHistory(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<SearchHistoryResponse> {
     const response = await api.get<SearchHistoryResponse>(
-      `/api/query/history?page=${page}&limit=${limit}`
+      `/api/query/history?page=${page}&limit=${limit}`,
     );
     return response.data;
   },
@@ -52,4 +59,4 @@ export const queryAPI = {
   },
 };
 
-export default api; 
+export default api;
