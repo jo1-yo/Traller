@@ -35,7 +35,7 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-return': 'warn',
       '@typescript-eslint/restrict-template-expressions': 'warn',
       'no-useless-escape': 'warn',
-      'no-control-regex': 'warn'
+      'no-control-regex': 'off'
     },
   },
 );

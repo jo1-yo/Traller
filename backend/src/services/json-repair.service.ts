@@ -8,7 +8,7 @@ export class JsonRepairService {
     const cleanContent = this.preProcess(jsonString);
 
     try {
-      return JSON.parse(cleanContent);
+      return JSON.parse(cleanContent) as T;
     } catch (parseError) {
       this.logger.error('Failed to parse JSON. Attempting repair...');
       this.logger.debug('Original content length:', jsonString.length);
@@ -24,11 +24,14 @@ export class JsonRepairService {
       const repairedJSON = this.attemptJSONRepair(cleanContent);
       if (repairedJSON) {
         try {
-          const parsed = JSON.parse(repairedJSON);
+          const parsed = JSON.parse(repairedJSON) as T;
           this.logger.warn('Successfully repaired JSON response');
           return parsed;
         } catch (repairError) {
-          this.logger.error('JSON repair also failed:', repairError.message);
+          this.logger.error(
+            'JSON repair also failed:',
+            (repairError as Error).message,
+          );
           this.logger.debug(
             'Repaired JSON preview (first 200 chars):',
             repairedJSON.substring(0, 200),
@@ -37,7 +40,7 @@ export class JsonRepairService {
       }
 
       throw new Error(
-        `Invalid JSON response after all repair attempts: ${parseError.message}`,
+        `Invalid JSON response after all repair attempts: ${(parseError as Error).message}`,
       );
     }
   }
@@ -45,7 +48,7 @@ export class JsonRepairService {
   private preProcess(content: string): string {
     let cleanContent = content
       .replace(/```json\n?|\n?```/g, '')
-      .replace(/^[^[\{]*/, '')
+      .replace(/^[^[{]*/, '')
       .replace(/[^}\]]*$/, '')
       .trim();
 
@@ -58,12 +61,18 @@ export class JsonRepairService {
   private fixCommonJsonIssues(jsonString: string): string {
     let fixed = jsonString.replace(/\\n/g, '\n');
 
-    fixed = fixed.replace(/"([^"]*(?:\\.[^"]*)*)"/g, (match, content) => {
-      const escaped = content
+    fixed = fixed.replace(/"([^"]*(?:\\.[^"]*)*)"/g, (_match, content) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+      const escaped: string = content
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         .replace(/\\/g, '\\\\')
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         .replace(/\n/g, '\\n')
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         .replace(/\r/g, '\\r')
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         .replace(/\t/g, '\\t')
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         .replace(/"/g, '\\"');
       return `"${escaped}"`;
     });
@@ -81,12 +90,12 @@ export class JsonRepairService {
         sanitized = sanitized.substring(arrayStart, arrayEnd + 1);
       }
 
-      sanitized = sanitized.replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+      sanitized = sanitized.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
       return sanitized.replace(/\\\\/g, '\\');
     } catch (error) {
       this.logger.warn(
         'Error during JSON sanitization, using original:',
-        error.message,
+        (error as Error).message,
       );
       return jsonString;
     }
@@ -153,7 +162,7 @@ export class JsonRepairService {
 
       return repaired;
     } catch (error) {
-      this.logger.error('Error during JSON repair:', error.message);
+      this.logger.error('Error during JSON repair:', (error as Error).message);
       return null;
     }
   }
