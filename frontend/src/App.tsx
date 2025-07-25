@@ -83,17 +83,20 @@ function App() {
       {/* 内容层 */}
       <div className="relative z-10 container mx-auto px-4">
         {!queryResult ? (
-          /* Query page */
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="w-full max-w-2xl">
+          /* Query interface and search history */
+          <div className="container mx-auto">
+            {/* Main query interface - centered */}
+            <div className="flex flex-col items-center justify-center min-h-screen">
               <QueryInterface
                 onSubmit={handleQuery}
                 isLoading={isLoading}
                 error={error}
               />
+
+              {/* Search history - appears directly below examples */}
               <SearchHistory
                 onSelectHistory={handleSelectHistory}
-                className="mt-16"
+                className="w-full px-4 md:px-6 mt-8"
               />
             </div>
           </div>
