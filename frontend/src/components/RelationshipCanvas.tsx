@@ -41,25 +41,24 @@ const CustomNode = ({
     onEntityClick: (entity: Entity) => void;
     isProtagonist: boolean;
   };
-}) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ type: "spring", stiffness: 260, damping: 20 }}
-    >
-      <EntityCard
-        entity={data.entity}
-        onEntityClick={data.onEntityClick}
-        isProtagonist={data.isProtagonist}
-      />
-    </motion.div>
-  );
-};
+}) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.8 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+    className="w-48"
+  >
+    <EntityCard
+      entity={data.entity}
+      onEntityClick={data.onEntityClick}
+      isProtagonist={data.isProtagonist}
+    />
+  </motion.div>
+);
 
 const nodeTypes = { entityCard: CustomNode };
-const nodeWidth = 320; // Corresponds to max-w-xs, adjust if needed
-const nodeHeight = 480; // Approximate height, might need adjustment
+const nodeWidth = 192; // w-48
+const nodeHeight = 288; // Estimate based on aspect ratio and content
 
 const getRadialLayoutElements = (nodes: Node[], edges: Edge[]) => {
   if (nodes.length === 0) return { nodes, edges };
@@ -72,8 +71,8 @@ const getRadialLayoutElements = (nodes: Node[], edges: Edge[]) => {
     return getLayoutedElements(nodes, edges);
   }
 
-  const radius = Math.max(250, 100 + otherNodes.length * 20);
-  const angleStep = (2 * Math.PI) / otherNodes.length;
+  const radius = Math.max(400, 150 + otherNodes.length * 25);
+  const angleStep = otherNodes.length <= 1 ? 0 : (2 * Math.PI) / otherNodes.length;
 
   protagonist.position = { x: 0, y: 0 };
   protagonist.targetPosition = Position.Top;
@@ -171,8 +170,8 @@ export const RelationshipCanvas: React.FC<RelationshipCanvasProps> = ({
       position: { x: 0, y: 0 },
       style: {
         width: nodeWidth,
-        height: 'auto', // Allow height to be determined by content
-      }
+        height: "auto", // Allow height to be determined by content
+      },
     }));
 
     const initialEdges: Edge[] = filteredEntities

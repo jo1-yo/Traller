@@ -25,14 +25,14 @@ export const EntityCard: React.FC<EntityCardProps> = ({
       variants={cardVariants}
       initial="hidden"
       animate="visible"
-      whileHover={{ y: -8, scale: 1.02 }}
+      whileHover={{ y: -6, scale: 1.03 }}
       whileTap={{ scale: 0.98 }}
       className={cn(
-        "group relative w-full min-w-[280px] max-w-[400px] h-auto cursor-pointer overflow-hidden rounded-3xl bg-gray-900 shadow-lg transition-all duration-300 ease-out",
-        "border-2",
+        "group relative w-full h-full cursor-pointer overflow-hidden rounded-2xl bg-gray-900/80 backdrop-blur-sm shadow-lg transition-all duration-300 ease-out",
+        "border",
         isProtagonist
-          ? "border-primary/60 shadow-primary/20"
-          : "border-gray-700/80 shadow-black/30",
+          ? "border-primary/50 shadow-primary/20"
+          : "border-gray-700/60 shadow-black/30",
       )}
       onClick={() => onEntityClick(entity)}
       style={{ perspective: "1000px" }}
@@ -54,7 +54,7 @@ export const EntityCard: React.FC<EntityCardProps> = ({
       )}
 
       {/* Main Image Section */}
-      <div className="relative w-full aspect-[4/3] overflow-hidden">
+      <div className="relative w-full aspect-square overflow-hidden">
         {entity.avatar_url ? (
           <img
             src={entity.avatar_url}
@@ -72,11 +72,11 @@ export const EntityCard: React.FC<EntityCardProps> = ({
       </div>
 
       {/* Information Section */}
-      <div className="p-6 text-left relative z-10">
-        <h3 className="text-2xl font-extrabold text-gray-100 leading-tight mb-3 font-apple-display">
+      <div className="p-4 text-left relative z-10">
+        <h3 className="text-lg font-bold text-gray-100 leading-tight mb-1 font-apple-display truncate">
           {entity.name}
         </h3>
-        <p className="text-sm text-gray-400 leading-relaxed line-clamp-2 mb-6 font-apple-text">
+        <p className="text-xs text-gray-400 leading-relaxed line-clamp-2 mb-4 font-apple-text">
           {entity.summary}
         </p>
 
@@ -86,7 +86,7 @@ export const EntityCard: React.FC<EntityCardProps> = ({
             e.stopPropagation();
             onEntityClick(entity);
           }}
-          className="relative w-full h-11 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold overflow-hidden transition-all duration-300 ease-out transform hover:scale-105 active:scale-95"
+          className="relative w-full h-9 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs font-semibold overflow-hidden transition-all duration-300 ease-out transform hover:scale-105 active:scale-95"
         >
           <span className="relative z-10">LEARN MORE</span>
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/40 to-purple-600/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md" />
@@ -99,9 +99,9 @@ export const EntityCard: React.FC<EntityCardProps> = ({
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="absolute top-4 left-4 text-gray-400 hover:text-white transition-colors duration-300 z-10 p-2 bg-black/30 rounded-full"
+          className="absolute top-2.5 left-2.5 text-gray-400 hover:text-white transition-colors duration-300 z-10 p-1.5 bg-black/30 rounded-full"
         >
-          <ExternalLink className="w-4 h-4" />
+          <ExternalLink className="w-3.5 h-3.5" />
         </a>
       )}
     </motion.div>
