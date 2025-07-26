@@ -29,3 +29,4 @@ yarn-error.log*
 # 操作系统文件
 .DS_Store
 Thumbs.db
+Traller.pem

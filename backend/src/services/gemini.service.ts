@@ -27,17 +27,13 @@ export class GeminiService {
     private jsonRepairService: JsonRepairService,
   ) {
     // 优先使用环境变量，否则使用硬编码密钥
-    this.apiKey =
-      this.configService.get<string>('OPENROUTER_API_KEY') ||
-      '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';
-    this.apiUrl =
-      this.configService.get<string>('OPENROUTER_API_URL') ||
-      'https://openrouter.ai/api/v1/chat/completions';
+    this.apiKey = this.configService.get<string>('KIMI_API_KEY') || '';
+    this.apiUrl = this.configService.get<string>('KIMI_API_URL') || '';
 
     if (
       this.apiKey ===
         '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' &&
-      !this.configService.get<string>('OPENROUTER_API_KEY')
+      !this.configService.get<string>('KIMI_API_KEY')
     ) {
       this.logger.warn(
         '⚠️  您正在使用硬编码的API密钥。为了安全起见，建议在 .env 文件中配置 OPENROUTER_API_KEY',
