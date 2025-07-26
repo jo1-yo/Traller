@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type QueryResultDocument = QueryResult & Document;
 
@@ -8,6 +8,8 @@ export type QueryResultDocument = QueryResult & Document;
   timestamps: true,
 })
 export class QueryResult {
+  _id: Types.ObjectId;
+
   @Prop({ required: true })
   originalQuery: string;
 

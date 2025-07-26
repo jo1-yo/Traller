@@ -8,6 +8,8 @@ export type EntityRelationshipDocument = EntityRelationship & Document;
   timestamps: true,
 })
 export class EntityRelationship {
+  _id: Types.ObjectId;
+
   @Prop({ type: Types.ObjectId, ref: 'QueryResult', required: true })
   queryResultId: Types.ObjectId;
 
@@ -18,7 +20,7 @@ export class EntityRelationship {
   name: string;
 
   @Prop({ required: true, maxlength: 50 })
-  tag: string; // 'people' | 'company'
+  tag: string; // 'person' | 'company'
 
   @Prop()
   avatarUrl?: string;

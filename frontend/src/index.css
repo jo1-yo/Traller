@@ -1,41 +1,86 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+ 
 @layer base {
   :root {
-    --radius: 0.5rem;
+    --background: 240 100% 4%; /* 更深的背景色 */
+    --foreground: 210 40% 98%;
+
+    --card: 240 100% 7%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 240 100% 4%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 260 100% 60%; /* 调整为与品牌色一致的紫色 */
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 220 100% 60%; /* 调整为与品牌色一致的蓝色 */
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 240 100% 7%;
+    --muted-foreground: 240 5% 65%;
+ 
+    --accent: 180 100% 50%; /* 调整为与品牌色一致的青色 */
+    --accent-foreground: 240 100% 4%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 240 100% 12%;
+    --input: 240 100% 12%;
+    --ring: 220 100% 60%; /* 使用蓝色作为ring颜色 */
+ 
+    --radius: 0.75rem;
   }
 }
-
+ 
 @layer base {
   * {
-    @apply border-gray-200;
+    @apply border-border;
   }
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply text-foreground;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   }
 }
 
 @layer components {
-  .card {
-    @apply bg-white text-gray-900 rounded-lg border border-gray-200 shadow-sm;
+  .input-glow-border {
+    @apply relative rounded-full;
   }
   
-  .btn {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  .input-glow-border::before {
+    content: '';
+    @apply absolute -inset-px rounded-full bg-gradient-to-r from-brand-light-blue to-brand-cyan opacity-0 transition-opacity duration-300;
   }
-  
-  .btn-primary {
-    @apply btn bg-primary-500 text-white hover:bg-primary-600 focus:bg-primary-600;
-  }
-  
-  .btn-secondary {
-    @apply btn bg-gray-100 text-gray-900 hover:bg-gray-200 focus:bg-gray-200;
+
+  .input-glow-border:focus-within::before {
+    @apply opacity-100;
   }
   
   .input {
-    @apply flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply relative w-full h-14 px-6 rounded-full bg-black/30 backdrop-blur-md text-white placeholder:text-gray-400 border border-white/20 transition-all font-apple-text text-lg;
+  }
+
+  .input:focus {
+    @apply outline-none ring-2 ring-brand-light-blue/50 bg-black/40 border-brand-light-blue/50;
+  }
+  
+  .btn {
+    @apply inline-flex items-center justify-center rounded-full text-sm font-apple-text transition-all duration-300 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn h-10 px-6 font-apple-text bg-gradient-to-r from-brand-light-blue to-brand-cyan text-white shadow-lg shadow-cyan-500/20 hover:opacity-90 hover:scale-105;
+  }
+
+  .btn-secondary {
+    @apply btn h-7 md:h-8 px-3 md:px-4 text-xs md:text-sm font-apple-text bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white backdrop-blur-sm border border-white/20;
   }
 }
 
@@ -49,8 +94,52 @@
   }
 }
 
+@keyframes spin-slow {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes spin-reverse-slow {
+  from {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+}
+
 .float {
   animation: float 3s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+.animate-spin-reverse-slow {
+  animation: spin-reverse-slow 30s linear infinite;
+}
+
+/* 3D变换相关样式 */
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* 径向渐变背景 */
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-stops));
 }
 
 /* React Flow 样式覆盖 */
@@ -78,4 +167,67 @@
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400;
-} 
+}
+
+/* 苹果风格字体类 */
+.font-apple-display {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+.font-apple-text {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 400;
+}
+
+.font-apple-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 200;
+  letter-spacing: -0.03em;
+  line-height: 0.9;
+}
+
+/* Logo 发光效果 */
+.logo-glow {
+  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.3));
+  transition: all 0.3s ease;
+}
+
+.logo-glow:hover {
+  filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.6)) drop-shadow(0 0 40px rgba(34, 197, 94, 0.3));
+  transform: scale(1.05);
+}
+
+/* 响应式优化 */
+@media (max-width: 640px) {
+  .input {
+    @apply h-12 text-base;
+  }
+
+  .btn-primary {
+    @apply h-9 px-4 text-xs;
+  }
+}
+
+/* Line clamp utilities for text truncation */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}

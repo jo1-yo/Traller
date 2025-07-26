@@ -1,124 +1,113 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Building2, User, ExternalLink } from 'lucide-react';
-import type { Entity } from '@/types';
-import { cn, getEntityTypeColor, getRelationshipScoreColor } from '@/lib/utils';
+import React from "react";
+import { motion } from "framer-motion";
+import { ExternalLink } from "lucide-react";
+import type { Entity } from "@/types";
+import { cn } from "@/lib/utils";
 
 interface EntityCardProps {
   entity: Entity;
-  onClick: () => void;
+  onEntityClick: (entity: Entity) => void;
   isProtagonist?: boolean;
-  className?: string;
 }
 
 export const EntityCard: React.FC<EntityCardProps> = ({
   entity,
-  onClick,
+  onEntityClick,
   isProtagonist = false,
-  className,
 }) => {
-  const typeColor = getEntityTypeColor(entity.tag);
-  const scoreColor = getRelationshipScoreColor(entity.relationship_score);
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: "easeOut" },
+    },
+  };
 
   return (
     <motion.div
-      className={cn(
-        'relative cursor-pointer group',
-        'transition-all duration-300 ease-out',
-        'hover:scale-105 hover:z-10',
-        className
-      )}
-      whileHover={{ y: -2 }}
+      variants={cardVariants}
+      initial="hidden"
+      animate="visible"
+      whileHover={{ y: -6, scale: 1.03 }}
       whileTap={{ scale: 0.98 }}
-      onClick={onClick}
-      layout
+      className={cn(
+        "group relative w-full h-full cursor-pointer overflow-hidden rounded-2xl bg-gray-900/80 backdrop-blur-sm shadow-lg transition-all duration-300 ease-out",
+        "border",
+        isProtagonist
+          ? "border-primary/50 shadow-primary/20"
+          : "border-gray-700/60 shadow-black/30",
+      )}
+      onClick={() => onEntityClick(entity)}
+      style={{ perspective: "1000px" }}
     >
-      <div
-        className={cn(
-          'card p-4 w-64 h-32',
-          'border-2 transition-all duration-300',
-          'hover:shadow-lg hover:shadow-blue-100',
-          isProtagonist
-            ? 'border-primary-500 bg-primary-50 shadow-lg'
-            : 'border-gray-200 hover:border-primary-300',
-          typeColor.includes('blue') && !isProtagonist && 'hover:border-blue-400',
-          typeColor.includes('green') && !isProtagonist && 'hover:border-green-400'
-        )}
-      >
-        {/* 关系评分标识 */}
-        {!isProtagonist && (
-          <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center text-xs font-bold">
-            <span className={scoreColor}>{entity.relationship_score}</span>
-          </div>
-        )}
+      {/* Glow effect */}
+      <motion.div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{
+          background: isProtagonist
+            ? "radial-gradient(circle at 50% 0%, hsl(var(--primary) / 0.15), transparent 70%)"
+            : "radial-gradient(circle at 50% 0%, hsl(var(--secondary) / 0.1), transparent 70%)",
+        }}
+      />
 
-        {/* 主角标识 */}
-        {isProtagonist && (
-          <div className="absolute -top-2 -left-2 px-2 py-1 bg-primary-500 text-white text-xs font-medium rounded-full">
-            主角
-          </div>
-        )}
-
-        <div className="flex items-start space-x-3 h-full">
-          {/* 头像或图标 */}
-          <div className="flex-shrink-0">
-            {entity.avatar_url && entity.avatar_url.trim() !== '' ? (
-              <img
-                src={entity.avatar_url}
-                alt={entity.name}
-                className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                }}
-              />
-            ) : null}
-            <div
-              className={cn(
-                'w-12 h-12 rounded-full flex items-center justify-center',
-                typeColor,
-                entity.avatar_url && entity.avatar_url.trim() !== '' ? 'hidden' : ''
-              )}
-            >
-              {entity.tag === 'people' ? (
-                <User className="w-6 h-6" />
-              ) : (
-                <Building2 className="w-6 h-6" />
-              )}
-            </div>
-          </div>
-
-          {/* 信息区域 */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center space-x-2 mb-1">
-              <h3 className="font-semibold text-gray-900 truncate text-sm">
-                {entity.name}
-              </h3>
-              <ExternalLink className="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-            
-            <div className="flex items-center space-x-2 mb-2">
-              <span
-                className={cn(
-                  'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border',
-                  typeColor
-                )}
-              >
-                {entity.tag === 'people' ? '人物' : '公司'}
-              </span>
-            </div>
-
-            <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
-              {entity.summary}
-            </p>
-          </div>
+      {isProtagonist && (
+        <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-full z-10">
+          PROTAGONIST
         </div>
+      )}
 
-        {/* 悬停提示 */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black bg-opacity-5 rounded-lg">
-          <span className="text-xs text-gray-700 font-medium">点击查看详情</span>
-        </div>
+      {/* Main Image Section */}
+      <div className="relative w-full aspect-square overflow-hidden">
+        {entity.avatar_url ? (
+          <img
+            src={entity.avatar_url}
+            alt={entity.name}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+            <span className="text-gray-500 text-2xl font-bold">
+              {entity.name.charAt(0)}
+            </span>
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent" />
       </div>
+
+      {/* Information Section */}
+      <div className="p-4 text-left relative z-10">
+        <h3 className="text-lg font-bold text-gray-100 leading-tight mb-1 font-apple-display truncate">
+          {entity.name}
+        </h3>
+        <p className="text-xs text-gray-400 leading-relaxed line-clamp-2 mb-4 font-apple-text">
+          {entity.summary}
+        </p>
+
+        {/* Action Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onEntityClick(entity);
+          }}
+          className="relative w-full h-9 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs font-semibold overflow-hidden transition-all duration-300 ease-out transform hover:scale-105 active:scale-95"
+        >
+          <span className="relative z-10">LEARN MORE</span>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/40 to-purple-600/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md" />
+        </button>
+      </div>
+
+      {entity.links && entity.links.length > 0 && (
+        <a
+          href={entity.links[0].url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="absolute top-2.5 left-2.5 text-gray-400 hover:text-white transition-colors duration-300 z-10 p-1.5 bg-black/30 rounded-full"
+        >
+          <ExternalLink className="w-3.5 h-3.5" />
+        </a>
+      )}
     </motion.div>
   );
-}; 
+};

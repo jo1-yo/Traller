@@ -14,6 +14,12 @@ importers:
       '@nestjs/typeorm':
         specifier: ^11.0.0
         version: 11.0.0(@nestjs/common@11.1.5(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.5(@nestjs/common@11.1.5(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.25(reflect-metadata@0.2.2)(sqlite3@5.1.7))
+      '@types/dagre':
+        specifier: ^0.7.53
+        version: 0.7.53
+      '@types/p5':
+        specifier: ^1.7.6
+        version: 1.7.6
       axios:
         specifier: ^1.11.0
         version: 1.11.0
@@ -23,6 +29,15 @@ importers:
       class-validator:
         specifier: ^0.14.2
         version: 0.14.2
+      dagre:
+        specifier: ^0.8.5
+        version: 0.8.5
+      react-p5:
+        specifier: ^1.4.1
+        version: 1.4.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      sonner:
+        specifier: ^2.0.6
+        version: 2.0.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       sqlite3:
         specifier: ^5.1.7
         version: 5.1.7
@@ -119,6 +134,15 @@ packages:
   '@tootallnate/once@1.1.2':
     resolution: {integrity: sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==}
     engines: {node: '>= 6'}
+
+  '@types/dagre@0.7.53':
+    resolution: {integrity: sha512-f4gkWqzPZvYmKhOsDnhq/R8mO4UMcKdxZo+i5SCkOU1wvGeHJeUXGIHeE9pnwGyPMDof1Vx5ZQo4nxpeg2TTVQ==}
+
+  '@types/p5@1.7.0':
+    resolution: {integrity: sha512-6AnjmW98/edgXB+pYDBx7t6QbCogIG6NUzey93JpGTZA4096C+KjSN8y0sj43QRd9XtblrAhoRXHj1pFZ2vsCg==}
+
+  '@types/p5@1.7.6':
+    resolution: {integrity: sha512-6pLTOo0V3N5jZb5nTwjiv3lPHLK3Z/TjbhQUj8CTWXocUk1Z/f6OHTp3Pcwi1BhWnf5gqKUcyEb1gP0KIJuQgw==}
 
   '@types/validator@13.15.2':
     resolution: {integrity: sha512-y7pa/oEJJ4iGYBxOpfAKn5b9+xuihvzDVnC/OSvlVnGxVg0pOqmjiMafiJ1KVNQEaPZf9HsEp5icEwGg8uIe5Q==}
@@ -269,6 +293,9 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  dagre@0.8.5:
+    resolution: {integrity: sha512-/aTqmnRta7x7MCCpExk7HQL2O4owCT2h8NT//9I1OQ9vt29Pa0BzSAkR5lwFUcQ7491yVi/3CXU9jQ5o0Mn2Sw==}
 
   dayjs@1.11.13:
     resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
@@ -456,6 +483,9 @@ packages:
 
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
+
+  graphlib@2.1.8:
+    resolution: {integrity: sha512-jcLLfkpoVGmH7/InMC/1hIvOPSUh38oJtGhvrOFGzioE1DZ+0YW16RgmOJhHiuWTvGiJQ9Z1Ik43JvkRPRvE+A==}
 
   has-property-descriptors@1.0.2:
     resolution: {integrity: sha512-55JNKuIW+vq4Ke1BjOTjM2YctQIvCT7GFzHwmfZPGo5wnrgkid0YQtnAleFSqumZm4az3n2BS+erby5ipJdgrg==}
@@ -678,9 +708,16 @@ packages:
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
 
+  opencollective-postinstall@2.0.2:
+    resolution: {integrity: sha512-pVOEP16TrAO2/fjej1IdOyupJY8KDUM1CvsaScRbw6oddvpQoOfGk4ywha0HKKVAD6RkW4x6Q+tNBwhf3Bgpuw==}
+    hasBin: true
+
   p-map@4.0.0:
     resolution: {integrity: sha512-/bjOqmgETBYB5BoEeGVea8dmvHb2m9GLy1E9W43yeyfP6QQCZGFNa+XRceJEuDB6zqr+gKpIAmlLebMpykw/MQ==}
     engines: {node: '>=10'}
+
+  p5@1.7.0:
+    resolution: {integrity: sha512-qrbT/44Dwm63ZtOKX/mp61pw+5yj6ijYLOmRv7p6zcfjbo83Vb0gVFEvW0kTLFu7hceWCig0HONo9F1bSlqbsQ==}
 
   package-json-from-dist@1.0.1:
     resolution: {integrity: sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw==}
@@ -732,6 +769,22 @@ packages:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
     hasBin: true
 
+  react-dom@19.1.0:
+    resolution: {integrity: sha512-Xs1hdnE+DyKgeHJeJznQmYMIBG3TKIHJJT95Q58nHLSrElKlGQqDTR2HQ9fx5CN/Gk6Vh/kupBTDLU11/nDk/g==}
+    peerDependencies:
+      react: ^19.1.0
+
+  react-p5@1.4.1:
+    resolution: {integrity: sha512-njeL8zskkbo8gK3ql1u4/MgmecT/g7Z7LvypTn65DWUnuBvV/9S5AowcKkwQuLVo8/DDAE5vgGVFq1DOkoWiJA==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+    peerDependencies:
+      react: '>= 17.0.1'
+      react-dom: '>= 17.0.1'
+
+  react@19.1.0:
+    resolution: {integrity: sha512-FS+XFBNvn3GTAWq26joslQgWNoFu08F4kl0J4CgdNKADkdSGXQyTCnKteIAJy96Br6YbpEU1LSzV5dYtjMkMDg==}
+    engines: {node: '>=0.10.0'}
+
   readable-stream@3.6.2:
     resolution: {integrity: sha512-9u/sniCrY3D5WdsERHzHE4G2YCXqoG5FTHUiCC4SIbr6XcLZBY05ya9EKjYek9O5xOAwjGq+1JdGBAS7Q9ScoA==}
     engines: {node: '>= 6'}
@@ -760,6 +813,9 @@ packages:
 
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
+
+  scheduler@0.26.0:
+    resolution: {integrity: sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA==}
 
   semver@7.7.2:
     resolution: {integrity: sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA==}
@@ -810,6 +866,12 @@ packages:
   socks@2.8.6:
     resolution: {integrity: sha512-pe4Y2yzru68lXCb38aAqRf5gvN8YdjP1lok5o0J7BOHljkyCGKVz7H3vpVIXKD27rj2giOJ7DwVyk/GWrPHDWA==}
     engines: {node: '>= 10.0.0', npm: '>= 3.0.0'}
+
+  sonner@2.0.6:
+    resolution: {integrity: sha512-yHFhk8T/DK3YxjFQXIrcHT1rGEeTLliVzWbO0xN8GberVun2RiBnxAjXAYpZrqwEVHBG9asI/Li8TAAhN9m59Q==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
 
   sprintf-js@1.1.3:
     resolution: {integrity: sha512-Oo+0REFV59/rz3gfJNKQiBlwfHaSESl1pcGyABQsnnIfWOFt6JNj5gCog2U6MLZ//IGYD+nA8nI+mTShREReaA==}
@@ -1096,6 +1158,12 @@ snapshots:
   '@tootallnate/once@1.1.2':
     optional: true
 
+  '@types/dagre@0.7.53': {}
+
+  '@types/p5@1.7.0': {}
+
+  '@types/p5@1.7.6': {}
+
   '@types/validator@13.15.2': {}
 
   abbrev@1.1.1:
@@ -1278,6 +1346,11 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  dagre@0.8.5:
+    dependencies:
+      graphlib: 2.1.8
+      lodash: 4.17.21
 
   dayjs@1.11.13: {}
 
@@ -1462,6 +1535,10 @@ snapshots:
 
   graceful-fs@4.2.11:
     optional: true
+
+  graphlib@2.1.8:
+    dependencies:
+      lodash: 4.17.21
 
   has-property-descriptors@1.0.2:
     dependencies:
@@ -1713,10 +1790,14 @@ snapshots:
     dependencies:
       wrappy: 1.0.2
 
+  opencollective-postinstall@2.0.2: {}
+
   p-map@4.0.0:
     dependencies:
       aggregate-error: 3.1.0
     optional: true
+
+  p5@1.7.0: {}
 
   package-json-from-dist@1.0.1: {}
 
@@ -1772,6 +1853,21 @@ snapshots:
       minimist: 1.2.8
       strip-json-comments: 2.0.1
 
+  react-dom@19.1.0(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+      scheduler: 0.26.0
+
+  react-p5@1.4.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      '@types/p5': 1.7.0
+      opencollective-postinstall: 2.0.2
+      p5: 1.7.0
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  react@19.1.0: {}
+
   readable-stream@3.6.2:
     dependencies:
       inherits: 2.0.4
@@ -1798,6 +1894,8 @@ snapshots:
 
   safer-buffer@2.1.2:
     optional: true
+
+  scheduler@0.26.0: {}
 
   semver@7.7.2: {}
 
@@ -1855,6 +1953,11 @@ snapshots:
       ip-address: 9.0.5
       smart-buffer: 4.2.0
     optional: true
+
+  sonner@2.0.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
 
   sprintf-js@1.1.3:
     optional: true

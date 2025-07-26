@@ -18,7 +18,7 @@ export class EntityLinkDto {
 export class EntityResponseDto {
   id: number;
   name: string;
-  tag: 'people' | 'company';
+  tag: 'person' | 'company';
   avatar_url: string;
   relationship_score: number;
   summary: string;
@@ -32,4 +32,24 @@ export class QueryResponseDto {
   queryType: string;
   entities: EntityResponseDto[];
   createdAt: Date;
+}
+
+export class SearchHistoryItemDto {
+  id: string;
+  originalQuery: string;
+  queryType: string;
+  createdAt: Date;
+  entityCount: number;
+}
+
+export class PaginationDto {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+}
+
+export class SearchHistoryResponseDto {
+  results: SearchHistoryItemDto[];
+  pagination: PaginationDto;
 }

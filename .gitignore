@@ -7,8 +7,6 @@
 node_modules/
 */node_modules/
 
-# 构建输出
-dist/
 build/
 *.tsbuildinfo
 
@@ -29,3 +27,5 @@ yarn-error.log*
 # 操作系统文件
 .DS_Store
 Thumbs.db
+Traller.pem
+action.txt

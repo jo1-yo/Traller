@@ -27,23 +27,32 @@ export class TavilyService {
 
   constructor(private configService: ConfigService) {
     // 优先使用环境变量，否则使用硬编码密钥
-    this.apiKey = this.configService.get<string>('TAVILY_API_KEY') || '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';
-    this.apiUrl = this.configService.get<string>('TAVILY_API_URL') || 'https://api.tavily.com';
-    
-    if (!this.apiKey || this.apiKey === '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') {
-      this.logger.warn('⚠️  使用默认Tavily API密钥，可能无效！请在.env文件中配置TAVILY_API_KEY');
+    this.apiKey =
+      this.configService.get<string>('TAVILY_API_KEY') ||
+      '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';
+    this.apiUrl =
+      this.configService.get<string>('TAVILY_API_URL') ||
+      'https://api.tavily.com';
+
+    if (
+      !this.apiKey ||
+      this.apiKey === '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'
+    ) {
+      this.logger.warn(
+        '⚠️  使用默认Tavily API密钥，可能无效！请在.env文件中配置TAVILY_API_KEY',
+      );
     }
   }
 
   /**
    * Search for avatar image URL based on entity name and tag
    * @param name - Name of the person or company
-   * @param tag - Type of entity ('people' or 'company')
+   * @param tag - Type of entity ('person' or 'company')
    * @returns Promise<string | null> - Avatar URL or null if not found
    */
   async searchAvatar(
     name: string,
-    tag: 'people' | 'company',
+    tag: 'person' | 'company',
   ): Promise<string | null> {
     try {
       if (!this.apiKey) {
@@ -55,7 +64,7 @@ export class TavilyService {
 
       // Construct search query based on entity type
       const searchQuery =
-        tag === 'people'
+        tag === 'person'
           ? `${name} profile photo headshot portrait`
           : `${name} company logo official`;
 
@@ -82,22 +91,18 @@ export class TavilyService {
       // Extract images from response
       const images = response.data.images || [];
       if (images.length > 0) {
-        // Filter for valid image URLs and prefer the first one
-        const validImage = images.find(
-          (url) =>
-            this.isValidImageUrl(url) && this.isHighQualityImage(url, tag),
-        );
-
-        if (validImage) {
-          this.logger.log(`Found avatar for ${name}: ${validImage}`);
-          return validImage;
+        // Return the first available image without strict filtering
+        const firstImage = images[0];
+        if (firstImage) {
+          this.logger.log(`Found avatar for ${name}: ${firstImage}`);
+          return firstImage;
         }
       }
 
       // Try fallback search with different query if no images found
       if (images.length === 0) {
         const fallbackQuery =
-          tag === 'people' ? `${name} photo image` : `${name} logo`;
+          tag === 'person' ? `${name} photo image` : `${name} logo`;
 
         const fallbackResponse: AxiosResponse<TavilyResponse> =
           await axios.post(
@@ -119,15 +124,12 @@ export class TavilyService {
           );
 
         const fallbackImages = fallbackResponse.data.images || [];
-        const validFallbackImage = fallbackImages.find((url) =>
-          this.isValidImageUrl(url),
-        );
-
-        if (validFallbackImage) {
+        if (fallbackImages.length > 0) {
+          const fallbackImage = fallbackImages[0];
           this.logger.log(
-            `Found fallback avatar for ${name}: ${validFallbackImage}`,
+            `Found fallback avatar for ${name}: ${fallbackImage}`,
           );
-          return validFallbackImage;
+          return fallbackImage;
         }
       }
 
@@ -199,10 +201,10 @@ export class TavilyService {
   /**
    * Check if image URL appears to be high quality based on entity type
    */
-  private isHighQualityImage(url: string, tag: 'people' | 'company'): boolean {
+  private isHighQualityImage(url: string, tag: 'person' | 'company'): boolean {
     const urlLower = url.toLowerCase();
 
-    if (tag === 'people') {
+    if (tag === 'person') {
       // Prefer professional profile photos
       const goodSources = ['linkedin', 'twitter', 'github', 'gravatar'];
       const badIndicators = ['thumb', 'small', '32x32', '64x64', 'icon'];

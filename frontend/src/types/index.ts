@@ -3,10 +3,12 @@ export interface EntityLink {
   url: string;
 }
 
+export type EntityTag = "person" | "company";
+
 export interface Entity {
   id: number;
   name: string;
-  tag: 'people' | 'company';
+  tag: EntityTag;
   avatar_url: string;
   relationship_score: number;
   summary: string;
@@ -16,7 +18,7 @@ export interface Entity {
 
 export interface QueryRequest {
   query: string;
-  queryType?: 'link' | 'person' | 'other';
+  queryType?: "link" | "person" | "other";
 }
 
 export interface QueryResponse {
@@ -27,8 +29,28 @@ export interface QueryResponse {
   createdAt: Date;
 }
 
+export interface SearchHistoryItem {
+  id: string;
+  originalQuery: string;
+  queryType: string;
+  createdAt: Date;
+  entityCount: number;
+}
+
+export interface Pagination {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+}
+
+export interface SearchHistoryResponse {
+  results: SearchHistoryItem[];
+  pagination: Pagination;
+}
+
 export interface ApiError {
   status: number;
   error: string;
   message: string;
-} 
+}

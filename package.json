@@ -1,11 +1,16 @@
 {
 	"dependencies": {
-		"@nestjs/typeorm": "^11.0.0",
-		"typeorm": "^0.3.25",
-		"sqlite3": "^5.1.7",
 		"@nestjs/config": "^4.0.2",
+		"@nestjs/typeorm": "^11.0.0",
+		"@types/dagre": "^0.7.53",
+		"@types/p5": "^1.7.6",
 		"axios": "^1.11.0",
+		"class-transformer": "^0.5.1",
 		"class-validator": "^0.14.2",
-		"class-transformer": "^0.5.1"
+		"dagre": "^0.8.5",
+		"react-p5": "^1.4.1",
+		"sonner": "^2.0.6",
+		"sqlite3": "^5.1.7",
+		"typeorm": "^0.3.25"
 	}
 }
