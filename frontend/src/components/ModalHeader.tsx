@@ -1,7 +1,7 @@
 import React from "react";
 import { X, Building2, User } from "lucide-react";
 import type { Entity } from "@/types";
-import { cn, getEntityTypeColor, getRelationshipScoreColor } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface ModalHeaderProps {
   entity: Entity;
@@ -12,14 +12,10 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
   entity,
   onClose,
 }) => {
-  const typeColor = getEntityTypeColor(entity.tag);
-  const scoreColor = getRelationshipScoreColor(entity.relationship_score);
-
   return (
     <div className="relative flex items-center justify-between p-6 border-b border-white/10 bg-gradient-to-r from-gray-900/50 to-gray-800/50 backdrop-blur-sm">
       {/* 装饰性光晕 */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 pointer-events-none" />
-      
       <div className="flex items-center space-x-4 relative z-10">
         <div className="flex-shrink-0 relative">
           {entity.avatar_url && entity.avatar_url.trim() !== "" ? (
@@ -30,7 +26,9 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
                 className="w-16 h-16 rounded-full object-cover border-2 border-white/20 shadow-xl"
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
-                  e.currentTarget.nextElementSibling?.classList.remove("hidden");
+                  e.currentTarget.nextElementSibling?.classList.remove(
+                    "hidden",
+                  );
                 }}
               />
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 pointer-events-none" />
@@ -62,7 +60,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
             <span
               className={cn(
                 "inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium border backdrop-blur-sm",
-                "bg-white/10 border-white/20 text-white/90"
+                "bg-white/10 border-white/20 text-white/90",
               )}
             >
               {entity.tag === "person"
@@ -73,7 +71,9 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({
             </span>
             {entity.id !== 0 && (
               <div className="flex items-center space-x-1">
-                <span className="text-sm text-gray-300 font-apple-text">关系紧密度:</span>
+                <span className="text-sm text-gray-300 font-apple-text">
+                  关系紧密度:
+                </span>
                 <span className={cn("font-bold text-sm", "text-cyan-400")}>
                   {entity.relationship_score}/10
                 </span>

@@ -8,7 +8,7 @@ export const P5Background: React.FC = () => {
   let px: number, py: number, pz: number;
   let eyesetx: number, eyesety: number, eyesetz: number;
   let camsetx: number, camsety: number, camsetz: number;
-  let targetx: number, targety: number, targetz: number;
+  let targetx: number, targety: number;
   let offsetx: number, offsety: number, offsetz: number;
   let lines: { px: number; py: number; pz: number }[] = [];
   let boxes: BoxObject[] = [];

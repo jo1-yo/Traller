@@ -23,8 +23,6 @@ export const RingCanvas: React.FC<RingCanvasProps> = ({
   const baseAngleRef = useRef(0);
   const cardElementsRef = useRef<(HTMLDivElement | null)[]>([]);
   const [cards, setCards] = useState<Card3D[]>([]);
-  const [protagonist, setProtagonist] = useState<Entity | null>(null);
-  const [otherEntities, setOtherEntities] = useState<Entity[]>([]);
 
   // 初始化所有卡片（包括主角）
   useEffect(() => {
@@ -49,7 +47,7 @@ export const RingCanvas: React.FC<RingCanvasProps> = ({
 
     baseAngleRef.current += 0.008;
 
-    cards.forEach((card, i) => {
+    cards.forEach((_, i) => {
       const element = cardElementsRef.current[i];
       if (!element) return;
 
@@ -68,12 +66,12 @@ export const RingCanvas: React.FC<RingCanvasProps> = ({
       const screenY = centerY + y * scale;
 
       // 透明度和层级
-      let opacity = 0.25 + 0.75 * (z + radius) / (2 * radius);
+      let opacity = 0.25 + (0.75 * (z + radius)) / (2 * radius);
       opacity = Math.max(0.15, Math.min(1, opacity));
       const zIndex = Math.round(1000 + z);
 
       // 应用样式
-      element.style.position = 'absolute';
+      element.style.position = "absolute";
       element.style.left = `${screenX - 55 * scale}px`;
       element.style.top = `${screenY - 75 * scale}px`;
       element.style.transform = `
@@ -104,7 +102,10 @@ export const RingCanvas: React.FC<RingCanvasProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className={cn("w-full h-full relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black", className)}
+      className={cn(
+        "w-full h-full relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black",
+        className,
+      )}
       ref={containerRef}
     >
       {/* 背景装饰 - 与画布保持一致 */}
@@ -122,7 +123,7 @@ export const RingCanvas: React.FC<RingCanvasProps> = ({
               "group relative cursor-pointer overflow-hidden rounded-2xl bg-gray-900/80 backdrop-blur-sm shadow-lg transition-all duration-300 ease-out border",
               isProtagonist
                 ? "border-primary/50 shadow-primary/20 w-48 h-72"
-                : "border-gray-700/60 shadow-black/30 w-40 h-60"
+                : "border-gray-700/60 shadow-black/30 w-40 h-60",
             )}
             onClick={(e) => {
               e.stopPropagation();

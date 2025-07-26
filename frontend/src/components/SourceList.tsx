@@ -17,7 +17,10 @@ export const SourceList: React.FC<SourceListProps> = ({ links }) => {
       </h3>
       <div className="space-y-3">
         {links.map((link) => (
-          <div key={link.index} className="flex items-start space-x-3 p-3 bg-gray-800/30 rounded-lg border border-gray-700/30 hover:border-cyan-500/30 transition-all duration-200 group">
+          <div
+            key={link.index}
+            className="flex items-start space-x-3 p-3 bg-gray-800/30 rounded-lg border border-gray-700/30 hover:border-cyan-500/30 transition-all duration-200 group"
+          >
             <span className="text-sm text-cyan-400 font-medium mt-1 bg-cyan-500/10 px-2 py-1 rounded border border-cyan-500/20">
               [{link.index}]
             </span>
