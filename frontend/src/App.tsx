@@ -66,9 +66,9 @@ function App() {
   };
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden">
-      {/* P5.js 动态背景 */}
-      <div className="absolute top-0 left-0 w-full h-full z-0">
+    <div className="relative w-full" style={{ minHeight: '100vh' }}>
+      {/* P5.js 无限动态背景 - 固定定位覆盖整个视口 */}
+      <div className="fixed top-0 left-0 w-full h-full z-0" style={{ minHeight: '100vh', minWidth: '100vw' }}>
         <P5Background />
       </div>
 
@@ -78,7 +78,7 @@ function App() {
           /* Query interface and search history */
           <div className="container mx-auto">
             {/* Main query interface - centered */}
-            <div className="flex flex-col items-center justify-center min-h-screen">
+            <div className="flex flex-col items-center justify-center" style={{ minHeight: '100vh' }}>
               <QueryInterface
                 onSubmit={handleQuery}
                 isLoading={isLoading}

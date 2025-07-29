@@ -80,9 +80,19 @@ export const P5Background: React.FC = () => {
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     p5.pixelDensity(p5.displayDensity());
-    p5.createCanvas(p5.windowWidth, p5.windowHeight, "webgl").parent(
-      canvasParentRef,
-    );
+    // 创建覆盖整个视口的画布
+    const canvas = p5.createCanvas(p5.windowWidth, p5.windowHeight, "webgl");
+    canvas.parent(canvasParentRef);
+    
+    // 设置画布样式以支持固定背景
+    const canvasElement = (canvas as any).canvas as HTMLCanvasElement;
+    canvasElement.style.position = 'fixed';
+    canvasElement.style.top = '0';
+    canvasElement.style.left = '0';
+    canvasElement.style.width = '100vw';
+    canvasElement.style.height = '100vh';
+    canvasElement.style.zIndex = '-1';
+    
     p5.colorMode("rgb", 256);
     p5.background(0);
     line_num = 500;
@@ -172,7 +182,23 @@ export const P5Background: React.FC = () => {
 
   const windowResized = (p5: p5Types) => {
     p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
+    
+    // 重新计算offset
+    offsetx = p5.width / 2.0;
+    offsety = p5.height / 2.0;
   };
 
-  return <Sketch setup={setup} draw={draw} windowResized={windowResized} />;
+  return (
+    <div style={{ 
+      position: 'fixed', 
+      top: 0, 
+      left: 0, 
+      width: '100vw', 
+      height: '100vh', 
+      zIndex: -1,
+      pointerEvents: 'none' // 确保不会阻挡交互
+    }}>
+      <Sketch setup={setup} draw={draw} windowResized={windowResized} />
+    </div>
+  );
 };

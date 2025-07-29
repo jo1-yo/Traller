@@ -20,8 +20,6 @@ export const SearchHistory: React.FC<SearchHistoryProps> = ({
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
   const observerRef = useRef<HTMLDivElement>(null);
 
   // Intersection Observer for lazy loading
@@ -50,36 +48,36 @@ export const SearchHistory: React.FC<SearchHistoryProps> = ({
     setError(null);
 
     try {
-      const response = await queryAPI.getSearchHistory(1, 6);
-      setHistoryData(response);
-      setHasMore(response.pagination.totalPages > 1);
+      // 获取更多数据用于去重，但只显示5条
+      const response = await queryAPI.getSearchHistory(1, 20);
+      
+      // 去重逻辑：根据originalQuery去重，只保留最新的
+      const uniqueQueries = new Map();
+      response.results.forEach(item => {
+        const queryKey = item.originalQuery.toLowerCase().trim();
+        if (!uniqueQueries.has(queryKey) || 
+            new Date(item.createdAt) > new Date(uniqueQueries.get(queryKey).createdAt)) {
+          uniqueQueries.set(queryKey, item);
+        }
+      });
+      
+      // 转换回数组并按时间排序，只取前5条
+      const deduplicatedResults = Array.from(uniqueQueries.values())
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, 5);
+      
+      setHistoryData({
+        ...response,
+        results: deduplicatedResults,
+        pagination: {
+          ...response.pagination,
+          totalItems: deduplicatedResults.length,
+          totalPages: 1
+        }
+      });
     } catch (err) {
       const apiError = err as ApiError;
       setError(apiError.message || "Failed to load search history");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadMoreHistory = async () => {
-    if (loading || !hasMore || !historyData) return;
-
-    setLoading(true);
-
-    try {
-      const nextPage = page + 1;
-      const response = await queryAPI.getSearchHistory(nextPage, 6);
-
-      setHistoryData((prev) => ({
-        ...response,
-        results: [...(prev?.results || []), ...response.results],
-      }));
-
-      setPage(nextPage);
-      setHasMore(nextPage < response.pagination.totalPages);
-    } catch (err) {
-      const apiError = err as ApiError;
-      setError(apiError.message || "Failed to load more history");
     } finally {
       setLoading(false);
     }
@@ -138,7 +136,7 @@ export const SearchHistory: React.FC<SearchHistoryProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className={cn("w-full max-w-4xl mx-auto mt-4 mb-6", className)}
+      className={cn("w-full max-w-4xl mx-auto mt-4 mb-20", className)}
     >
       {/* Compact Header */}
       <div className="flex items-center justify-between mb-4">
@@ -163,7 +161,7 @@ export const SearchHistory: React.FC<SearchHistoryProps> = ({
           </h3>
           {historyData && (
             <span className="text-xs text-gray-400 font-apple-text">
-              {historyData.pagination.totalItems} queries
+              {historyData.results.length} queries
             </span>
           )}
         </div>
@@ -233,7 +231,7 @@ export const SearchHistory: React.FC<SearchHistoryProps> = ({
               className="space-y-2"
             >
               {historyData.results
-                .slice(0, isExpanded ? undefined : 2)
+                .slice(0, isExpanded ? 5 : 2)
                 .map((item, index) => (
                   <motion.button
                     key={item.id}
@@ -291,48 +289,6 @@ export const SearchHistory: React.FC<SearchHistoryProps> = ({
                 ))}
             </motion.div>
           </AnimatePresence>
-
-          {/* Load More Button */}
-          {isExpanded && hasMore && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="flex justify-center mt-4"
-            >
-              <button
-                onClick={() => {
-                  void loadMoreHistory();
-                }}
-                disabled={loading}
-                className="flex items-center space-x-2 px-4 py-2 bg-black/20 backdrop-blur-sm border border-white/15 rounded-md text-gray-400 hover:text-white hover:border-brand-cyan/40 transition-all duration-300 disabled:opacity-50 font-apple-text text-sm"
-              >
-                {loading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-brand-cyan"></div>
-                    <span>Loading...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Load More</span>
-                    <svg
-                      className="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </>
-                )}
-              </button>
-            </motion.div>
-          )}
         </div>
       )}
 
